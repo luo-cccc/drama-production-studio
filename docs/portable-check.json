@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "recorded_at_utc": "2026-11-07T06:46:59.730773+00:00",
+  "scope": "Actual temporary copy outside source workspace, Python -I; self-test, both visual fixtures, and actual seven-file export.",
+  "commands": [
+    {
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\scripts\\check_episode.py",
+        "--self-test"
+      ],
+      "exit_code": 0,
+      "stdout": "[+] self-test PASSED\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\scripts\\check_episode.py",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\storyboard-scene.md",
+        "--scope",
+        "visual",
+        "--source",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\storyboard-source.md"
+      ],
+      "exit_code": 0,
+      "stdout": "== C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\storyboard-scene.md  [visual] 正文字数≈0 ==\n结果: PASSED\n证据范围：文字结构/时码/显式状态/台词；动作语义与平台能力需复核，未运行媒体检查。\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\scripts\\check_episode.py",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\faithful-fight-scene.md",
+        "--scope",
+        "visual",
+        "--require-visual",
+        "--source",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\faithful-fight-source.md"
+      ],
+      "exit_code": 0,
+      "stdout": "== C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\faithful-fight-scene.md  [visual] 正文字数≈0 ==\n[WARN] V14 包1：源文未识别出明确标注角色的话轮；无对白或未标注内容须人工核对，不能声称自动逐字检查已覆盖\n结果: PASSED（含 WARN；按具体范围人工复核）\n证据范围：文字结构/时码/显式状态/台词；动作语义与平台能力需复核，未运行媒体检查。\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\scripts\\check_episode.py",
+        "--combat-json",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\drama-production-studio\\examples\\fight\\sword-duel.json",
+        "--export",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-studio-final-portable-s0ec406d\\delivery"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"structural_status\": \"pass\",\n  \"semantic_status\": \"needs_review\",\n  \"media_status\": \"NOT_RUN\",\n  \"output\": \"C:\\\\Users\\\\Msi\\\\AppData\\\\Local\\\\Temp\\\\drama-studio-final-portable-s0ec406d\\\\delivery\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "exported_sha256": {
+    "01-design.md": "d800cbedf2910092209f3bbb29ea561652bc654c7132466da480e5fddefc362d",
+    "02-assets.md": "8adf8f54ab8dfdbf1b3de352d49b082bba29993ecb58868301cc6276a0bf382b",
+    "03-storyboard.md": "f8b12ae606d0a5e2de8e7ca55160e56c8602e6dea89f9e8b8f3879093de42148",
+    "04-keyframes.md": "9c626b43a594a080d8db011809c93df2e17422e9dff8b5f6e359383a8d5de2d5",
+    "05-video-prompts.md": "da68148a1f210cff03d07f5ea5745b72391656273bb537ac23f1c7ea81dbe29b",
+    "06-review.md": "3b8de5e047a921384b6454179d8147aa36511ebceb884e44dde9ac4f5715e631",
+    "project.json": "10acf55a1a1107e5a0390e2788f3fd355144e650c5aff46e5f9f21bbc0cd4bb4"
+  },
+  "project_roundtrip_equal": true,
+  "runtime_sha256": {
+    "check_episode.py": "a891bc38025c0a335ab67b5d5ae996e1f0716ef5c2307a31a195e9623bfac92d",
+    "check_series.py": "a78a1d840021954e282521783ce7bf14e765d6ed897bff21aea33c8567f62fde",
+    "check_storyboard.py": "5db1db3ec3e2eeef5f63d1a0401785994e4f6c24cc82c519658315a125952b63",
+    "fight_contract.py": "2133e93715ef6a7b35115099a1d13e001df78a5e5e69a752f5aa106fadc06b29",
+    "verify_package.py": "de9111e5c17444eb2842c3ffa878152e9e12e7d531430355afba8dd5d1a63535"
+  }
+}

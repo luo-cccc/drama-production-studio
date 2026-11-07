@@ -1,0 +1,33 @@
+{
+  "name": "drama-production-studio",
+  "display_name": "短剧创制工作室",
+  "version": "6.0.0",
+  "updated": "2026-11-07",
+  "entry": "SKILL.md",
+  "description": "短剧剧作、视觉分镜提示词与仙侠斗法的一体化创制技能",
+  "contracts": {
+    "visual_text": "1.1",
+    "combat_json": [
+      "1.1",
+      "1.2"
+    ]
+  },
+  "paths": {
+    "references": "references",
+    "templates": "templates",
+    "examples": "examples",
+    "scripts": "scripts",
+    "tests": "tests",
+    "documentation": "docs"
+  },
+  "tools": {
+    "episode": "scripts/check_episode.py",
+    "series": "scripts/check_series.py",
+    "storyboard_internal": "scripts/check_storyboard.py",
+    "fight_internal": "scripts/fight_contract.py",
+    "verification": "scripts/verify_package.py"
+  },
+  "runtime_dependencies": "Python standard library",
+  "source_attribution": "docs/source-attribution.md",
+  "source_manifest": "docs/source-manifest.json"
+}

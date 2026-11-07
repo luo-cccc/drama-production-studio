@@ -1,0 +1,293 @@
+{
+  "package": "drama-production-studio",
+  "version": "6.0.0",
+  "integration_date": "2026-11-07",
+  "sources": [
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "SKILL.md",
+      "sha256": "5baf3800c912d5326224f16acfd6b1e70094afad87a6220b4fa49d8e91a5a763",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/asset-templates.md",
+      "sha256": "62335a875f9039f7206d78fbd2004538aebdb2d9a1812d309ed6cfb040d314ef",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/shot-writing.md",
+      "sha256": "c1234a069fc3e91fe8c695b84f069be05d79f25d8ee8a916b5cdf37060e6a316",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/timing.md",
+      "sha256": "095874461ae482469e2bf9b25e1f5bbf54cd5df00ea33e5f653d3e061f9c9198",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/transitions.md",
+      "sha256": "aafdd7dc2780beeac39f9a5b14b08e8d14b878fe1fd00e5b6d733f859718d038",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/model-adaptation.md",
+      "sha256": "664eb8f206fcd97c9120a072efa8b973157204e7a0bb93b55b8351f094a308ec",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/state-and-revision.md",
+      "sha256": "2c997a71fef90adf1ed1fd58b84b35085a7012b56e6404cd84974e40d8814f15",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/video-template.md",
+      "sha256": "86934b525bc22891dbc0401f56a116f608cca7d7f86078c31aee9aec03aaba5b",
+      "targets": [
+        "references/production/storyboard-workflow.md",
+        "references/production/asset-prompts.md",
+        "references/production/timing-and-sync.md",
+        "references/production/camera-and-delivery.md",
+        "references/production/production-state.md",
+        "templates/storyboard-package-template.md"
+      ],
+      "method": "methods adapted to one entry"
+    },
+    {
+      "source_package": "script-to-storyboard-prompts-main",
+      "source_path": "references/camera-reference.md",
+      "sha256": "5a97bde59292a1229b1216f1cff14ca06c3975cf0ed5c91af1e571bc1e397225",
+      "targets": [
+        "references/production/camera-language.md"
+      ],
+      "method": "included reference text with title/local link remapping"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "SKILL.md",
+      "sha256": "917beb267e4e7fc52ce2cd54547e52eaa1418266f1614feca820b96dc8e0a78d",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/combat-design.md",
+      "sha256": "9497fea491eb1137318dc84fb33f60719b0963a5b2dd59f02af3957505cda685",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/assets-and-keyframes.md",
+      "sha256": "2ad374165d1f12fb58c408e94ae6f79ce87cf458837a85b7f1d2578d7fcd3c88",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/camera-and-vfx.md",
+      "sha256": "b2b4cba7897d027b9f055367dd38730a44249de8857e65b0df4f64394479d687",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/continuity-and-timing.md",
+      "sha256": "2eb10e8dfec71001f0b3ba7567eb1a6edb04c069697962d400df61bff756ab7c",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/cultivation-mechanics.md",
+      "sha256": "448ed61e3ba8e2bd5830d59044d7d0d73a106052179f706626a5a20176d38f64",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/spectacle-and-style.md",
+      "sha256": "65a1d1ae62753c039b1f3fd92ec5417145aa6304d9fdae721987d8988307c276",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/review-and-repair.md",
+      "sha256": "3c470adc3ddbbc92b7ffbf865b6df2a4759bee9942e7c012997104aec0995ae4",
+      "targets": [
+        "references/fight/fight-mechanics.md",
+        "references/fight/fight-choreography.md",
+        "references/fight/fight-data-contract.md",
+        "references/production/asset-prompts.md"
+      ],
+      "method": "methods adapted"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "scripts/combat_plan.py",
+      "sha256": "cd9dfc5298c7a81bff5d5975661d5d1eb8bac416fa688d1bbd645510d1e054c3",
+      "targets": [
+        "scripts/fight_contract.py",
+        "references/fight/fight-data-contract.md",
+        "tests/test_fight_contract.py"
+      ],
+      "method": "local code/contract/test adaptation with source attribution"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "references/delivery-contract.md",
+      "sha256": "d0b96e3fbd719a3e8e9b9d7b222c47f8ddd99be63f08e524bfc587ef1ba0c39b",
+      "targets": [
+        "scripts/fight_contract.py",
+        "references/fight/fight-data-contract.md",
+        "tests/test_fight_contract.py"
+      ],
+      "method": "local code/contract/test adaptation with source attribution"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "tests/test_combat_plan.py",
+      "sha256": "6224c8ce7e772448da1f8159899907defb23f8c02d72bb46655e1aa402e17089",
+      "targets": [
+        "scripts/fight_contract.py",
+        "references/fight/fight-data-contract.md",
+        "tests/test_fight_contract.py"
+      ],
+      "method": "local code/contract/test adaptation with source attribution"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "examples/01-sword-and-body.json",
+      "sha256": "10acf55a1a1107e5a0390e2788f3fd355144e650c5aff46e5f9f21bbc0cd4bb4",
+      "targets": [
+        "examples/fight/sword-duel.json"
+      ],
+      "method": "unchanged JSON bytes"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "examples/02-formation-rescue.json",
+      "sha256": "c5a2cf1edcedb1e942ae0b15bd3697fd2ad43cf09e9b1395e33b053366a16287",
+      "targets": [
+        "examples/fight/formation-rescue.json"
+      ],
+      "method": "unchanged JSON bytes"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "examples/03-aerial-avatar.json",
+      "sha256": "be262302c1eeff03cc5b4e05874afd0eff843074ac8ca5558f24902246d330f3",
+      "targets": [
+        "examples/fight/aerial-manifestation.json"
+      ],
+      "method": "unchanged JSON bytes"
+    },
+    {
+      "source_package": "xianxia-fight-director-main",
+      "source_path": "examples/04-illusion-and-breath.json",
+      "sha256": "38930b373384c4d87bb3b3a33dc5300cad53da22b594a382a08b99799b16d690",
+      "targets": [
+        "examples/fight/illusion-counterplay.json"
+      ],
+      "method": "unchanged JSON bytes"
+    }
+  ]
+}

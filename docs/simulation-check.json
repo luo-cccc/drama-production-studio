@@ -1,0 +1,74 @@
+{
+  "status": "PASS",
+  "recorded_at_utc": "2026-11-07T06:44:40.569969+00:00",
+  "scope": "Fresh independent task and parent recheck of actual files. Text structure plus manual source/action/hand/one-contact/outcome review. Media NOT_RUN, timing ESTIMATED.",
+  "new_independent_case": true,
+  "original_archive": "independent-user-simulation.zip in external recovery archive",
+  "asset_prompts": 9,
+  "shots": 2,
+  "keyframe_prompts": 7,
+  "video_masters": 2,
+  "preserved_prompt_blocks": 18,
+  "prompt_blocks_unchanged_during_curation": true,
+  "semantic_review": {
+    "source_events": "preserved",
+    "weapon_hands": "both right hands throughout",
+    "contact_count": 1,
+    "end_state": "both retain original weapons, stop, uninjured",
+    "added_speech": false,
+    "segment_boundary": "3 seconds, same explicit world state"
+  },
+  "warning": "V14: raw source has no labeled speaker turns. No extra speech was found during text review; not an automatic verbatim-dialogue certification.",
+  "checks": [
+    {
+      "label": "raw-independent-delivery",
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\Desktop\\drama\\drama-production-studio\\scripts\\check_episode.py",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-production-6s-65abfd24908e4c569e964dbc19088f11\\production_package.md",
+        "--scope",
+        "visual",
+        "--require-visual",
+        "--source",
+        "C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-production-6s-65abfd24908e4c569e964dbc19088f11\\source.txt"
+      ],
+      "exit_code": 0,
+      "input_sha256": {
+        "target": "4f2254842bb3ade42d116fa773f4a511bc68b07e997dfdc7ab7969c7e6765fbe",
+        "source": "9d3426fe1f42e4ad0a186a76185e175c6fb4f6ab8148b117580455e54c769820"
+      },
+      "inputs_unchanged": true,
+      "stdout": "== C:\\Users\\Msi\\AppData\\Local\\Temp\\drama-production-6s-65abfd24908e4c569e964dbc19088f11\\production_package.md  [visual] 正文字数≈0 ==\n[WARN] V14 包1：源文未识别出明确标注角色的话轮；无对白或未标注内容须人工核对，不能声称自动逐字检查已覆盖\n结果: PASSED（含 WARN；按具体范围人工复核）\n证据范围：文字结构/时码/显式状态/台词；动作语义与平台能力需复核，未运行媒体检查。\n",
+      "stderr": ""
+    },
+    {
+      "label": "curated-package-example",
+      "command": [
+        "D:\\miniconda3\\python.exe",
+        "-I",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Msi\\Desktop\\drama\\drama-production-studio\\scripts\\check_episode.py",
+        "C:\\Users\\Msi\\Desktop\\drama\\drama-production-studio\\examples\\faithful-fight-scene.md",
+        "--scope",
+        "visual",
+        "--require-visual",
+        "--source",
+        "C:\\Users\\Msi\\Desktop\\drama\\drama-production-studio\\examples\\faithful-fight-source.md"
+      ],
+      "exit_code": 0,
+      "input_sha256": {
+        "target": "6f4fd5ba5838bf31b46276430ef82bd4f90d1e36e9cef1c95044b80cad96efcb",
+        "source": "9d3426fe1f42e4ad0a186a76185e175c6fb4f6ab8148b117580455e54c769820"
+      },
+      "inputs_unchanged": true,
+      "stdout": "== C:\\Users\\Msi\\Desktop\\drama\\drama-production-studio\\examples\\faithful-fight-scene.md  [visual] 正文字数≈0 ==\n[WARN] V14 包1：源文未识别出明确标注角色的话轮；无对白或未标注内容须人工核对，不能声称自动逐字检查已覆盖\n结果: PASSED（含 WARN；按具体范围人工复核）\n证据范围：文字结构/时码/显式状态/台词；动作语义与平台能力需复核，未运行媒体检查。\n",
+      "stderr": ""
+    }
+  ]
+}
