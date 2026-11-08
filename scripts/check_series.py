@@ -38,6 +38,7 @@ import pathlib
 WALL_RANGES = {60: [(8, 11), (21, 24), (41, 44)], 80: [(10, 15), (28, 32), (55, 58)], 100: [(13, 19), (35, 40), (68, 73)],
                # 长档（约 3 分钟/集）：集数减半，墙集区间同步折算
                30: [(4, 6), (10, 12), (20, 22)], 40: [(5, 8), (14, 16), (27, 29)], 50: [(7, 10), (17, 20), (34, 37)]}
+SUPPORTED_EPISODES = frozenset(WALL_RANGES)
 TABLE_KEYS = {"伏笔": "伏笔账", "人物": "人物账", "道具": "道具账", "规则": "世界观规则账"}
 
 
@@ -200,6 +201,16 @@ def _scope_key(episode, scene):
     return episode, scene
 
 
+def _is_dead_status(value):
+    """识别明确的死亡/失踪/退场状态，避免把“未死亡”误判为死亡。"""
+    state = re.sub(r"\s+", "", value or "")
+    if not state:
+        return False
+    if re.search(r"(?:未|不|尚未|仍然?活|存活|生还|在世)", state):
+        return False
+    return bool(re.search(r"(?:死亡|已死|殒命|殒落|失踪|阵亡|下线|退场)", state))
+
+
 def _table_kind(titles):
     # 子级斗法表不能因祖先标题含“稳定事件链”而被当成链表。
     for title in reversed(titles):
@@ -288,6 +299,11 @@ def validate_ledger(text, total_eps=80, scripts=None):
     for kw in TABLE_KEYS.values():
         if not re.search(r"#+.*?" + kw, text):
             fails.append(f"S7 台账缺「{kw}」表")
+        elif not _rows(text, kw):
+            fails.append(f"S7 台账「{kw}」缺少可解析的数据表或数据行")
+    episodes_supported = total_eps in SUPPORTED_EPISODES
+    if not episodes_supported:
+        fails.append(f"S6 不支持总集数 {total_eps}；请使用 {', '.join(map(str, sorted(SUPPORTED_EPISODES)))}")
     mm = re.search(r"当前集[:：]\s*(\d+)", text)
     cur = int(mm.group(1)) if mm else (max(scripts) if scripts else total_eps)
 
@@ -314,7 +330,7 @@ def validate_ledger(text, total_eps=80, scripts=None):
     for r in (_rows(text, "人物") or []):
         if len(r) < 3:
             continue
-        if re.search(r"死|殒|失踪", r[2]):
+        if _is_dead_status(r[2]):
             mm2 = re.search(r"(\d+)", r[4] if len(r) > 4 else r[2])
             dead[r[0].strip()] = int(mm2.group(1)) if mm2 else cur
     if scripts:
@@ -337,7 +353,7 @@ def validate_ledger(text, total_eps=80, scripts=None):
                 if nm in NOISE or nm in seen:
                     continue
                 seen.add(nm)
-                if nm not in roster and not any(nm in x or x in nm for x in roster):
+                if nm not in roster:
                     warns.append(f"S4 第{ep}集台词角色「{nm}」不在人物账名册")
 
     # S5 断章缺失
@@ -347,15 +363,16 @@ def validate_ledger(text, total_eps=80, scripts=None):
                 fails.append(f"S5 第{ep}集缺【本集断章卡点】")
 
     # S6 付费墙标记
-    ranges = WALL_RANGES.get(total_eps, WALL_RANGES[80])
-    marks = []
-    for m in re.finditer(r"墙[^\n]{0,12}?(\d+)\s*[-~至]?\s*(\d+)?", text):
-        marks.append(int(m.group(1)))
-        if m.group(2):
-            marks.append(int(m.group(2)))
-    for lo, hi in ranges:
-        if not any(lo <= x <= hi for x in marks):
-            warns.append(f"S6 未见付费墙落在第{lo}~{hi}集区间(三档各需一条'X级墙 第N集'标记)")
+    if episodes_supported:
+        ranges = WALL_RANGES[total_eps]
+        marks = []
+        for m in re.finditer(r"墙[^\n]{0,12}?(\d+)\s*[-~至]?\s*(\d+)?", text):
+            marks.append(int(m.group(1)))
+            if m.group(2):
+                marks.append(int(m.group(2)))
+        for lo, hi in ranges:
+            if not any(lo <= x <= hi for x in marks):
+                warns.append(f"S6 未见付费墙落在第{lo}~{hi}集区间(三档各需一条'X级墙 第N集'标记)")
 
     # S8 反转手段轮换: 相邻3集内(集数差<=2)复用同一[A-I]标签 → WARN
     rev = _reversal_entries(text)
@@ -507,8 +524,8 @@ def main():
         return self_test()
     if not args.ledger:
         print(__doc__); return 2
-    if args.episodes <= 0:
-        print("[-] --episodes 需要一个正整数"); return 2
+    if args.episodes not in SUPPORTED_EPISODES:
+        print("[-] --episodes 只支持 " + ", ".join(map(str, sorted(SUPPORTED_EPISODES)))); return 2
     try:
         led = pathlib.Path(args.ledger).read_text(encoding="utf-8-sig")
     except FileNotFoundError:

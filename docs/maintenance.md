@@ -28,7 +28,7 @@ Skill Creator的 `quick_validate.py` 可检查入口格式和命名；该工具�
 
 ## 命名与兼容
 
-目录、入口 `name` 和包清单均为 `drama-production-studio`。内部Python文件使用下划线，文档、模板与示例使用语义化小写连字符。`SKILL.md`、`README.md`、`CHANGELOG.md`、`LICENSE` 为保留文件名。
+包标识、入口 `name` 和包清单均为 `drama-production-studio`；工作区检出目录允许带环境后缀，不参与包身份判断。内部Python文件使用下划线，文档、模板与示例使用语义化小写连字符。`SKILL.md`、`README.md`、`CHANGELOG.md`、`LICENSE` 为保留文件名。
 
 现有自然语言模式、命令别名、E/V/S编号、JSON1.1/1.2、视觉文本契约1.1及导出文件名保持其接口含义。改名映射在[迁移说明](migration.md)及[机器映射](name-map.json)。文件移位需同步Markdown相对链接、代码中的路径、邻接模块加载、测试和来源清单目标。
 

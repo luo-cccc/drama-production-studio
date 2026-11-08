@@ -457,6 +457,24 @@ def validate(project):
         if cursor < ranges[ref][1] - EPS:
             fail("beats." + ref, "引用镜头未完整覆盖节拍")
 
+    # A beat's actors must remain recoverable in every shot that presents any
+    # part of that beat.  The shot asset list feeds the exported segment
+    # anchors, so allowing an actor to disappear here can produce a structurally
+    # valid bundle whose prompts omit a required subject.  Off-screen
+    # continuity remains representable: keep the actor in asset_ids and state
+    # its off-screen condition in the shot or execution text.
+    for path, shot in shots:
+        if not isinstance(shot.get("beat_ids"), list) or not isinstance(shot.get("asset_ids"), list):
+            continue
+        present = set(shot["asset_ids"])
+        for ref in shot["beat_ids"]:
+            beat = beat_map.get(ref)
+            if beat is None:
+                continue
+            for actor in beat.get("actors", ()):
+                if actor not in present:
+                    fail(path + ".asset_ids", f"承载节拍{ref}的镜头缺少行动主体资产 {actor}")
+
     assigned = []
     previous = None
     for path, item in segments:

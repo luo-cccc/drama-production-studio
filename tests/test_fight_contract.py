@@ -250,6 +250,24 @@ class PlanTests(unittest.TestCase):
         self.assertIn("此拍跨镜", plan.render(changed)["03-storyboard.md"])
         self.assertNotIn("此拍跨镜", plan.render(changed)["05-video-prompts.md"])
 
+    def test_beat_actors_must_be_present_in_covering_shot_assets(self):
+        def remove_hero(project):
+            for shot in project["shots"]:
+                shot["asset_ids"] = [asset for asset in shot["asset_ids"] if asset != "hero"]
+            for frame in project["keyframes"]:
+                frame["asset_ids"] = [asset for asset in frame["asset_ids"] if asset != "hero"]
+        self.rejects(remove_hero, "缺少行动主体资产 hero")
+
+    def test_execution_states_are_a_distinct_but_continuous_layer(self):
+        # The contract intentionally keeps concise execution states separate
+        # from complete outer world states; only adjacent execution states must
+        # connect exactly.
+        self.assertNotEqual(self.project["shots"][0]["opening_state"],
+                            self.project["shots"][0]["execution"]["opening_state"])
+        self.assertEqual([], plan.validate(self.project))
+        self.rejects(lambda p: p["shots"][1]["execution"].update(opening_state="断开的执行状态"),
+                     "与前镜 execution.end_state 必须逐字一致")
+
     def test_segment_mapping_and_handoff(self):
         self.rejects(lambda p: p["segments"][0].update(opening_state="错误"), "的外层 opening_state 不一致")
         self.rejects(lambda p: p["segments"][-1].update(closing_state="错误"), "的外层 end_state 不一致")

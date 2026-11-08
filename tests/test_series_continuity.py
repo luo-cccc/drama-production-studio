@@ -314,6 +314,34 @@ class LegacyChecksTests(unittest.TestCase):
         self.assertTrue(any(m.startswith("S6 ") for m in series.validate_ledger(LEGACY, total_eps=40)[1]))
         self.assertEqual(sum(m.startswith("S7 ") for m in series.validate_ledger("空台账")[0]), 4)
 
+    def test_s7_requires_parseable_rows_not_only_headings(self):
+        headings = """# 台账
+当前集: 1
+## 伏笔账
+## 人物账
+## 道具账
+## 世界观规则账
+"""
+        fails, _, _ = series.validate_ledger(headings)
+        self.assertEqual(sum(message.startswith("S7 ") for message in fails), 4)
+
+    def test_s3_does_not_treat_un_death_as_dead(self):
+        text = LEGACY.replace("| 林辰 | 1 | 存活 | 主角 | 30 | |", "| 林辰 | 1 | 未死亡 | 主角 | 30 | |")
+        fails, _, _ = series.validate_ledger(text, scripts={31: "林辰：我还活着。\n【本集断章卡点】：黑屏"})
+        self.assertFalse(any(message.startswith("S3 ") for message in fails), fails)
+
+    def test_s4_requires_exact_roster_name(self):
+        fails, warns, _ = series.validate_ledger(
+            LEGACY,
+            scripts={30: "林辰华：这是新角色。\n【本集断章卡点】：黑屏"},
+        )
+        self.assertFalse(fails, fails)
+        self.assertTrue(any(message.startswith("S4 ") and "林辰华" in message for message in warns), warns)
+
+    def test_s6_rejects_unsupported_episode_count_without_crashing(self):
+        fails, _, _ = series.validate_ledger(LEGACY, total_eps=70)
+        self.assertTrue(any(message.startswith("S6 ") and "不支持总集数 70" in message for message in fails), fails)
+
     def test_s8_reversal_window_still_warns_only_nearby_reuse(self):
         headers = ("集数", "反转标签", "核心冲突事件")
         close = (("EP1", "[F]", "夺令"), ("EP3", "[F]", "破门"))
@@ -362,7 +390,7 @@ class CliTests(unittest.TestCase):
         self.assertIn(b"S5 ", result.stdout)
 
     def test_invalid_options_return_usage_error_without_traceback(self):
-        for options in (("--episodes",), ("--episodes", "abc"), ("--episodes", "0"), ("--episodes", "-1"), ("--script-dir",), ("--script-dir", "--episodes", "40"), ("--unknown",)):
+        for options in (("--episodes",), ("--episodes", "abc"), ("--episodes", "0"), ("--episodes", "-1"), ("--episodes", "70"), ("--script-dir",), ("--script-dir", "--episodes", "40"), ("--unknown",)):
             with self.subTest(options=options):
                 result = self.run_cli(self.ledger_path, *options)
                 self.assertEqual(result.returncode, 2, result.stdout + result.stderr)

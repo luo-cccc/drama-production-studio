@@ -74,6 +74,22 @@ class VisualChecks(unittest.TestCase):
     def test_segment_must_assign_whole_shots(self):
         self.assertCode("V6", GOOD.replace("| FORMAL_1 | 0–6", "| FORMAL_1 | 0–5"))
 
+    def test_invalid_segment_id_is_not_silently_ignored(self):
+        bad = GOOD.replace(
+            "| FORMAL_1 | 0–6 | 0–6 | C01 |",
+            "| BAD_ID | 0–6 | 0–6 | C01 |",
+            1,
+        )
+        self.assertCode("V6", bad)
+
+    def test_malformed_segment_row_is_not_silently_ignored(self):
+        bad = GOOD.replace(
+            "| FORMAL_1 | 0–6 | 0–6 | C01 |",
+            "| BROKEN | 0–6 | 0–6 |",
+            1,
+        )
+        self.assertCode("V6", bad)
+
     def test_frame_time_outside_shot(self):
         self.assertCode("V7", GOOD.replace("K01｜handoff｜S01｜6秒", "K01｜handoff｜S01｜7秒"))
 
@@ -82,6 +98,12 @@ class VisualChecks(unittest.TestCase):
 
     def test_frame_label_alone_not_image_prompt(self):
         self.assertCode("V7", GOOD.replace("【图像提示词】：", "【丢失图像字段】：", 1))
+
+    def test_keyframe_requires_event_chain(self):
+        left, right = GOOD.split("【逐镜关键帧】", 1)
+        frames, tail = right.split("【视频提示词母稿】", 1)
+        frames = frames.replace("【关联事件链】：C01\n", "", 1)
+        self.assertCode("V7", left + "【逐镜关键帧】" + frames + "【视频提示词母稿】" + tail)
 
     def test_boundary_handoff_required(self):
         self.assertCode("V8", GOOD.replace("K01｜handoff", "K01｜single"))
@@ -287,6 +309,9 @@ class VisualChecks(unittest.TestCase):
 
     def test_new_speaker_cannot_be_ignored(self):
         self.assertCode('V14',GOOD.replace('镜头一{','镜头一{\n丙：“这句并不属于原文！”',1))
+
+    def test_new_unquoted_speaker_cannot_be_ignored(self):
+        self.assertCode('V14',GOOD.replace('镜头一{','镜头一{\n丙：这句并不属于原文。',1))
 
     def test_no_dialogue_source_cannot_gain_spoken_lines(self):
         self.assertCode('V14',GOOD,'停电的诊所。两人静默送药，没有对白。')

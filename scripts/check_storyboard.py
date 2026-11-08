@@ -66,7 +66,19 @@ def section(text, label):
 
 def tables(text):
     """Return table rows indexed by the actual header; do not infer meaning from cell words."""
-    rows, header = [], None
+    return [dict(zip(header, cells)) for header, cells in table_records(text)
+            if len(cells) == len(header)]
+
+
+def table_records(text):
+    """Return each markdown table row together with its header and raw cell count.
+
+    The normal ``tables`` helper intentionally drops malformed rows for the
+    flexible narrative tables.  Strict production tables (such as the segment
+    assignment table) need to see those rows so they cannot disappear from
+    validation merely because a cell was missing or an ID was malformed.
+    """
+    records, header = [], None
     for line in text.splitlines():
         if not line.lstrip().startswith("|"):
             header = None
@@ -77,9 +89,8 @@ def tables(text):
         if header is None:
             header = cells
             continue
-        if len(cells) == len(header):
-            rows.append(dict(zip(header, cells)))
-    return rows
+        records.append((header, cells))
+    return records
 
 
 def blocks(text, pattern):
@@ -120,7 +131,18 @@ def source_dialogue(text, quoted_only=False):
     This is not a screenplay parser. Unlabelled/ambiguous speech is reported for manual review.
     """
     events=[]
-    noise={"时间","声效","音效","声音","场景","人物","景别","机位","构图","总时长","画幅","画面内容","画面文字","道具文字","标牌文字","字幕","结局锁定","事实锁定"}
+    noise={
+        "时间","声效","音效","声音","场景","人物","景别","机位","构图",
+        "总时长","画幅","画面内容","画面文字","道具文字","标牌文字","字幕",
+        "结局锁定","事实锁定","角色设计","角色锚定","全片风格","整体描述",
+        "起态","终态","禁止项","运镜及拍摄主体","特效/材质反馈","光照与归属",
+        "生成风险","保底构图","关联事件链","静态状态","图像提示词","段内时刻",
+        "段号","全场时码","段内时码","开场状态","段尾状态","下一段尚未开始的动作",
+        "交接帧","本段起态","本段终态与承接","资产","素材来源","控制","继承","排除",
+        "摄影","镜头","段","场","制作段","状态","文本","输入","TEXT","INPUT",
+        "CAPABILITY","MEDIA","台词与声音","全片风格","模型适配","当前视觉版本",
+        "冷色写实电影质感","光照与材质","风格","质感","风格与材质",
+    }
     quoted=re.compile(r"(?<![\u4e00-\u9fffA-Za-z0-9])([\u4e00-\u9fffA-Za-z][\u4e00-\u9fffA-Za-z0-9]{0,11})(?:[（(][^）)\n]*[）)])?[ \t]*[：:][ \t]*[“\"「]([^”\"」\n]+)[”\"」]")
     quote_spans=[]
     for match in quoted.finditer(text):
@@ -239,9 +261,15 @@ def _check_package(body, check, source_text):
         check.fail("V4", f"事件链{cid}没有镜头承载，不能声称完整覆盖")
 
     segments, end_prev = {}, 0.0
-    for row in tables(section(body,"分段表")):
-        fid = row.get('段号', '')
+    segment_table = table_records(section(body, "分段表"))
+    for header, cells in segment_table:
+        if len(cells) != len(header):
+            check.fail('V6', '分段表存在列数不一致的行，不能静默忽略')
+            continue
+        row = dict(zip(header, cells))
+        fid = row.get('段号', '').strip()
         if not re.fullmatch(r'FORMAL_\d+', fid):
+            check.fail('V6', f'分段表段号无效：{fid or "空"}')
             continue
         if fid in segments:
             check.fail('V6', f'分段表重复{fid}')
@@ -281,7 +309,13 @@ def _check_package(body, check, source_text):
         for field in ('静态状态','图像提示词'):
             if not usable(value(text,field)):
                 check.fail('V7',f'{kid}缺少可独立复现的{field}，角色名/时码标签不算静图提示词')
-        frame=dict(id=kid,role=role,shot=sid,time=t,state=value(text,'静态状态'),refs=re.findall(r'(?:EP\d+-SC\d+-)?C\d+',value(text,'关联事件链')))
+        chain_text = value(text, '关联事件链')
+        refs = re.findall(r'(?:EP\d+-SC\d+-)?C\d+', chain_text)
+        if not usable(chain_text) or not refs:
+            check.fail('V7', f'{kid}缺少有效的关联事件链；关键帧必须能追溯到事件事实')
+        elif any(ref not in chains for ref in refs):
+            check.fail('V7', f'{kid}引用未知事件链：{", ".join(ref for ref in refs if ref not in chains)}')
+        frame=dict(id=kid,role=role,shot=sid,time=t,state=value(text,'静态状态'),refs=refs)
         frames[kid]=frame
         if role=='handoff':
             handoffs.append(frame)
@@ -355,13 +389,11 @@ def _check_package(body, check, source_text):
             check.warn("V14", "源文未识别出明确标注角色的话轮；无对白或未标注内容须人工核对，不能声称自动逐字检查已覆盖")
         actual=[]
         for prompt in byid.values():
-            for speaker,speech in source_dialogue(prompt):
-                # Only quoted speech is a spoken line; metadata/role descriptions aren't dialogue.
-                if speaker in {x[0] for x in source}:
-                    actual.append((speaker,speech))
-            for speaker,speech in source_dialogue(prompt, quoted_only=True):
-                if speaker not in {x[0] for x in source}:
-                    actual.append((speaker,speech))
+            # source_dialogue filters known production-field labels above.  Keep
+            # every remaining explicit role label, including unquoted lines, so
+            # a newly invented speaker cannot bypass V14 by omitting quotation
+            # marks.
+            actual.extend(source_dialogue(prompt))
         if Counter(source)!=Counter(actual) or source!=actual:
             check.fail('V14','视频母稿台词的说话人、逐字内容、次数或顺序与指定原文不同')
 

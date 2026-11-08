@@ -62,7 +62,8 @@ class PackageContracts(unittest.TestCase):
             self.assertFalse((ROOT/old).exists(),old)
             self.assertTrue((ROOT/new).is_file(),new)
         package=json.loads((ROOT/'package-manifest.json').read_text(encoding='utf-8'))
-        self.assertEqual(package['name'],ROOT.name)
+        self.assertEqual(package['name'], manifest['package'])
+        self.assertEqual(package['name'], 'drama-production-studio')
         for target in package['tools'].values():
             self.assertTrue((ROOT/target).is_file(),target)
 
