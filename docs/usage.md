@@ -6,7 +6,8 @@
 |---|---|
 | 原创短剧 | “做一部40集长档家庭短剧，先给立项、人物和全剧结构。” |
 | 只写正文 | “接现有台账写第3集，只要剧本，不做视觉包。” |
-| 定稿场转分镜 | “原文照录，制作完整18秒场景，视频16:9，每段6秒，一次交齐全部提示词。” |
+| 定稿场转分镜 | “原文照录，制作完整18秒场景，视频16:9，模型单次生成0–30秒之间任意时长，按剧本内容判断每段多长，一次交齐全部提示词。” |
+| 分段判断 | “模型支持0–30秒之间任意时长，不要默认30秒也不均分；按事件链、动作相位、话轮和稳定边界说明为什么这样分段。” |
 | 斗法设计 | “在既定能力和结局下设计这场斗法，交攻防设计、资产、镜头、关键帧、全部视频母稿和审阅。” |
 | 局部返修 | “只改第2段的镜位，动作、台词与段界不变，同步更新受影响的帧和母稿。” |
 | 继续与恢复 | “沿上次项目继续下一未覆盖段”；如状态缺失，提供项目目录或已有产物。 |
@@ -30,6 +31,8 @@ python -X utf8 -B scripts/check_episode.py examples/screenplay-standard.md --for
 python -X utf8 -B scripts/check_episode.py examples/screenplay-extended.md --format long
 # 定稿短场：不套整集E阈值；--source对应精确原文
 python -X utf8 -B scripts/check_episode.py examples/storyboard-scene.md --scope visual --source examples/storyboard-source.md
+# 1.2内容驱动分段示例：同一场拆8+10，检查V16分段依据
+python -X utf8 -B scripts/check_episode.py examples/storyboard-content-segmented.md --scope visual --source examples/storyboard-source.md
 # 新交付必须有制作包时
 python -X utf8 -B scripts/check_episode.py 项目/单集制作稿.md --require-visual
 # 有全剧上下文的连续性台账
@@ -49,6 +52,8 @@ python -X utf8 -B scripts/check_episode.py --combat-json examples/fight/sword-du
 
 ## 评估结果的含义
 
-E检查剧本的结构和粗估，V检查视觉包结构、显式状态、时轴及对白，S检查系列台账。未给源文不宣称完成逐字保真。台词识别之外的动作、揭示和结果需语义复核；平台能力、实际输入和媒体观察另外记录。
+E检查剧本的结构和粗估，V检查视觉包结构、显式状态、时轴及对白，S检查系列台账。V16只检查1.2的分段决策记录、能力范围、段长依据和边界记录，不判断叙事合理性；未给源文不宣称完成逐字保真。台词识别之外的动作、揭示和结果需语义复核；平台能力、实际输入和媒体观察另外记录。
+
+视觉文本契约当前为1.2：新增【单次生成时长能力】、分段策略、分段决策表、每段【分段依据】和段内多镜母稿写法。1.1旧包继续可读，使用【单段时长上限】并跳过V16。分段判断按[分段决策](../references/production/segment-planning.md)：模型支持0–30秒之间任意时长，但每段长度由内容关联、自然时长和稳定边界决定，不默认取上限、不均分。
 
 制作预算先计话轮、动作、阅读、停顿及顺并行关系，再核目标时长。E16的粗估×1.20不能当试读结果；没有试读或测量时写ESTIMATED。真实发布要求按当时官方材料核对，本地扫描不表示平台已审核。

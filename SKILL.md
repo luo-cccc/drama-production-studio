@@ -2,8 +2,8 @@
 name: drama-production-studio
 description: 将创意、小说或定稿中文剧本转为短剧大纲、分集剧本、资产图片提示词、导演分镜、关键帧与逐段视频提示词，支持仙侠斗法、连续性管理及返修。用于完整创制、现稿转制作、续作或专项审阅，按用户指定范围交付。
 metadata:
-  version: "6.0.0"
-  updated: "2026-11-07"
+  version: "6.1.0"
+  updated: "2026-11-10"
 ---
 
 # 短剧创制工作室
@@ -17,7 +17,7 @@ metadata:
 - **继续、返修、恢复、重发**：读取项目当前原文、台账和实际产物后处理。逐字重发使用历史正文，不推进覆盖；恢复依据真实文件，不靠记忆补造状态。
 - **专项审阅**：检查指定范围并交问题与可用修订；普通咨询不建立制作状态。
 
-已有条件不重复询问。目标、结局或能力规则存在影响故事的缺项时集中说明，继续不依赖缺项的工作。制作前记录视频画幅、完整风格正文、单段上限及其依据；用户已有选择直接沿用，模型未定仍可完成通用母稿。视频画幅与资产版式分别记录。
+已有条件不重复询问。目标、结局或能力规则存在影响故事的缺项时集中说明，继续不依赖缺项的工作。制作前记录视频画幅、完整风格正文、模型单次生成时长能力（如0–30秒之间任意时长）及其依据；分段按剧本内容与关联关系判断，不默认取上限、不均分。用户已有选择直接沿用，模型未定仍可完成通用母稿。视频画幅与资产版式分别记录。
 
 要求完整制作时完成所要求的全场、全段及资产，分文件时提供可访问文件与索引；只交首段或标题清单不能称完整。文字提示词交付与实际媒体生成分别记录。
 
@@ -46,7 +46,7 @@ metadata:
 | 小说改编与机制参考 | [小说改编](references/story/novel-adaptation.md)、[机制提炼与重构](references/story/story-reinvention.md) |
 | 分集与连写 | [连续性管理](references/story/continuity-management.md)、[开场钩子](references/story/opening-hooks.md)、[分集结尾](references/story/episode-endings.md)、[项目台账模板](templates/project-ledger-template.md) |
 | 正文与精修 | [场景工艺](references/writing/scene-craft.md)、[台词工艺](references/writing/dialogue-craft.md)、[独白旁白](references/writing/voiceover-design.md)、[冲突设计](references/writing/conflict-design.md)、[剧本模板](templates/screenplay-template.md) |
-| 分镜与提示词 | [制作流程](references/production/storyboard-workflow.md)、[资产图词](references/production/asset-prompts.md)、[预算同步](references/production/timing-and-sync.md)、[摄影与提交](references/production/camera-and-delivery.md)、[状态返修](references/production/production-state.md)、[视觉包模板](templates/storyboard-package-template.md)；查摄影术语时读[摄影词库](references/production/camera-language.md) |
+| 分镜与提示词 | [制作流程](references/production/storyboard-workflow.md)、[分段决策](references/production/segment-planning.md)、[资产图词](references/production/asset-prompts.md)、[预算同步](references/production/timing-and-sync.md)、[摄影与提交](references/production/camera-and-delivery.md)、[状态返修](references/production/production-state.md)、[视觉包模板](templates/storyboard-package-template.md)；查摄影术语时读[摄影词库](references/production/camera-language.md) |
 | 战斗与斗法 | 在视觉规则上增加[机制设计](references/fight/fight-mechanics.md)、[编舞与攻防](references/fight/fight-choreography.md)；需要JSON存档或导出时才读[数据契约](references/fight/fight-data-contract.md) |
 | 内容审阅 | [修订规程](references/review/revision-protocol.md)、[保护性例外](references/review/review-exceptions.md)、[内容检查](references/review/content-review.md) |
 | 技能维护 | [维护说明](docs/maintenance.md)、[评测方法](references/review/evaluation-method.md) |
@@ -67,7 +67,7 @@ metadata:
 
 ## 视觉执行要点
 
-流程为“制作基线 → 资产 → 整场观看任务和事件链 → 全场预算与分段 → 导演镜头 → 单时刻静帧 → 各段独立完整母稿 → 需要的模型适配 → 检查与台账更新”。首次人物身份母图与四视图同轮齐交；默认母图9:16半身，四视图横版非等分，上方脸部约1/3、下方无头正侧背约2/3，用户另有要求时记录覆盖。
+流程为“制作基线 → 资产 → 整场观看任务和事件链 → 全场预算与内容驱动分段 → 导演镜头 → 单时刻静帧 → 各段独立完整母稿 → 需要的模型适配 → 检查与台账更新”。分段按内容单元、关联强度、自然时长、模型能力与稳定边界共同判断；不默认取30秒，不按上限或段数均分。首次人物身份母图与四视图同轮齐交；默认母图9:16半身，四视图横版非等分，上方脸部约1/3、下方无头正侧背约2/3，用户另有要求时记录覆盖。
 
 每镜起终态写位置、支撑、持物手、伤损、在途攻击、持续效果与环境痕迹；相邻镜、段界handoff、关键帧和母稿共享显式世界状态。关键动作的准备、接触和结果分别落帧。摄影改变不重置状态；每段母稿可独立复制，包含当段全部执行信息。
 
@@ -79,6 +79,6 @@ metadata:
 
 ## 检查与证据
 
-统一单集工具为 `scripts/check_episode.py`，系列工具为 `scripts/check_series.py`。完整剧本用E1～E26；出现视觉包时追加V1～V15；定稿场景使用 `--scope visual`，需要制作包时用 `--require-visual`。系列故事账用S1～S8，有视觉账时追加S9～S11。命令与示例见[使用指南](docs/usage.md)。
+统一单集工具为 `scripts/check_episode.py`，系列工具为 `scripts/check_series.py`。完整剧本用E1～E26；出现视觉包时追加V1～V16；定稿场景使用 `--scope visual`，需要制作包时用 `--require-visual`。系列故事账用S1～S8，有视觉账时追加S9～S11。命令与示例见[使用指南](docs/usage.md)。V16检查分段决策记录与段长依据，语义合理性仍需逐条复核。
 
 FAIL处理具体失败；WARN结合原文复核；NOTE保护性提示不要求改稿。`--source`只核实际提供范围内可识别的对白，原文行动、画内文字、揭示和结果仍逐条审阅。结构检查、模型语义判断、实际输入、平台能力和媒体观察分别记录；未生成或未观看的媒体记NOT_RUN，不把词表通过写成平台审核成功。

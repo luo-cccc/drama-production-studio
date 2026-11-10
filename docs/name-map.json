@@ -1,6 +1,6 @@
 {
   "package": "drama-production-studio",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "date": "2026-11-07",
   "previous_package": "short-drama-factory",
   "previous_directory": "short-drama-factory-master",
@@ -72,8 +72,8 @@
     "CHANGELOG.md",
     "LICENSE",
     "eight conversation modes",
-    "E1-E26, V1-V15, S1-S11",
-    "visual text 1.1",
+    "E1-E26, V1-V16, S1-S11",
+    "visual text 1.2 (1.1 compatible)",
     "combat JSON 1.1/1.2",
     "existing CLI flags",
     "export file names"
@@ -81,5 +81,10 @@
   "added_examples": [
     "examples/faithful-fight-source.md",
     "examples/faithful-fight-scene.md"
+  ],
+  "updated": "2026-11-10",
+  "added_in_6_1_0": [
+    "references/production/segment-planning.md",
+    "examples/storyboard-content-segmented.md"
   ]
 }

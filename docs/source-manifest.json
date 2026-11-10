@@ -1,6 +1,6 @@
 {
   "package": "drama-production-studio",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "integration_date": "2026-11-07",
   "sources": [
     {
@@ -289,5 +289,6 @@
       ],
       "method": "unchanged JSON bytes"
     }
-  ]
+  ],
+  "updated": "2026-11-10"
 }

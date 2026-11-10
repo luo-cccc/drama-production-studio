@@ -91,6 +91,27 @@ class VisualLedgerTests(unittest.TestCase):
     def test_combat_extension_is_optional(self):
         self.assertEqual(series.validate_ledger(ledger(combats=None)), ([], [], 30))
 
+    def test_new_capability_and_strategy_fields_are_accepted(self):
+        baseline = BASELINE.replace(
+            "【单段时长上限】：12秒（项目决定）",
+            "【单次生成时长能力】：0–30秒之间任意时长\n【分段策略】：按内容关联判断；不默认取上限，不均分。",
+        )
+        self.assertEqual(series.validate_ledger(ledger(baseline=baseline)), ([], [], 30))
+
+    def test_new_capability_without_strategy_warns_s9(self):
+        baseline = BASELINE.replace(
+            "【单段时长上限】：12秒（项目决定）",
+            "【单次生成时长能力】：0–30秒之间任意时长",
+        )
+        self.assertTrue(any("分段策略" in message for message in warnings(ledger(baseline=baseline), "S9")))
+
+    def test_empty_strategy_warns_s9(self):
+        baseline = BASELINE.replace(
+            "【单段时长上限】：12秒（项目决定）",
+            "【单次生成时长能力】：0–30秒之间任意时长\n【分段策略】：",
+        )
+        self.assertTrue(any("分段策略" in message for message in warnings(ledger(baseline=baseline), "S9")))
+
     def test_empty_baseline_cannot_borrow_next_line(self):
         for value in ("", " ", "\t", "\u3000", "\u00a0", "\u200b"):
             with self.subTest(value=repr(value)):

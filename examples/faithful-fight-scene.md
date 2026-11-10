@@ -381,7 +381,7 @@
 ```
 
 【检查证据】
-TEXT：faithful-fight-source.md全文、C01–C03、S01–S02、K01–K07与两段母稿完成文本语义逐条复核，具体证据见本文件末尾项目台账与逐条审阅章节；统一CLI结果以docs/simulation-check.json（本包当前复测）为准。范围为文本契约、时轴、显式状态和对白识别，不以机械结构通过替代动作语义证明。
+TEXT：faithful-fight-source.md全文、C01–C03、S01–S02、K01–K07与两段母稿完成文本语义逐条复核，具体证据见本文件末尾项目台账与逐条审阅章节；统一CLI结果以docs/verification-results.json（本包当前复测）为准。范围为文本契约、时轴、显式状态和对白识别，不以机械结构通过替代动作语义证明。
 INPUT：现有参考图为无；实际图片生成、读取、上传及任务绑定均NOT_RUN，资产编号不是已经存在的图。
 CAPABILITY：UNKNOWN；具体模型、入口、精确3秒时长选项、参考/首尾帧和音频能力未指定，未联网核实。
 MEDIA：NOT_RUN；无图片/视频/音频生成，无实际观看、试听、走读或时长测量。
@@ -447,6 +447,6 @@ MEDIA：NOT_RUN；无图片/视频/音频生成，无实际观看、试听、走
 | INPUT | NOT_RUN | 真实图片生成、图片读取、上传、本次任务输入绑定均未执行；纯文字制作输入可用 |
 | CAPABILITY | UNKNOWN | 未指定具体模型、版本、入口；未联网核实3秒和首尾帧等能力 |
 | MEDIA | NOT_RUN | 没有生成或观看图像/视频，没有试听音轨，没有实测成片长度 |
-| 统一CLI结构检查 | 见docs/simulation-check.json | 对examples/faithful-fight-scene.md使用--scope visual --require-visual --source；当前复测命令、输出与退出码保存在docs/simulation-check.json；原始独立运行日志随包外恢复档案保存 |
+| 统一CLI结构检查 | 见docs/verification-results.json | 对examples/faithful-fight-scene.md使用--scope visual --require-visual --source；当前复测命令、输出与退出码保存在docs/verification-results.json；原始独立运行日志随包外恢复档案保存 |
 
 本轮下一目标：所需完整文字制作包已交齐，无待续段。后续只有用户另行提出媒体执行或具体模型适配时，才进入对应工作。

@@ -57,7 +57,9 @@
     V3~V6 镜头时码连续、完整字段和段长上限；
     V7~V8 关键帧与多段 handoff 交接；
     V9~V11 战斗目标/规则/代价/痕迹/所知实际/呼吸拍/变招/光照；
-    V12~V15 高风险保底、提示词洁净度和独立视频母稿。
+    V12~V15 高风险保底、提示词洁净度和独立视频母稿；
+    V16 1.2分段决策记录：能力范围、分段策略、候选比较、每段时长依据与边界；
+        只查记录和硬边界，不判断叙事合理性。
 
 保护性反例 (NOTE 级 —— 提示"你可能过度修正了", 不要求修改; 详见 references/review/review-exceptions.md):
     N12 碎句化: 连续 >=5 行对白且每行净字数 <=4      NOTE(疑为绕开 E2 而剁碎完整句)
@@ -1135,7 +1137,7 @@ def main():
     from pathlib import Path
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description="单一入口：剧本 E1~E26 与视觉 V1~V15；结构通过不代表媒体通过")
+    parser = argparse.ArgumentParser(description="单一入口：剧本 E1~E26 与视觉 V1~V16；结构通过不代表媒体通过")
     parser.add_argument("path", nargs="?")
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--format", choices=PROFILES, default="auto")

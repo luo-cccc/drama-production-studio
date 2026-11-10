@@ -10,6 +10,7 @@ from scripts.check_storyboard import validate_visual_package
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 GOOD = (ROOT / "examples/storyboard-scene.md").read_text(encoding="utf-8")
+GOOD12 = (ROOT / "examples/storyboard-content-segmented.md").read_text(encoding="utf-8")
 SOURCE = (ROOT / "examples/storyboard-source.md").read_text(encoding="utf-8")
 
 
@@ -17,9 +18,16 @@ class VisualChecks(unittest.TestCase):
     def errors(self, text, source=SOURCE):
         return validate_visual_package(text, source)[0]
 
+    def warnings(self, text, source=SOURCE):
+        return validate_visual_package(text, source)[1]
+
     def assertCode(self, code, text, source=SOURCE):
         errors = self.errors(text, source)
         self.assertTrue(any(s.startswith(code + " ") for s in errors), errors)
+
+    def assertWarn(self, code, text, source=SOURCE):
+        warnings = self.warnings(text, source)
+        self.assertTrue(any(s.startswith(code + " ") for s in warnings), warnings)
 
     def test_full_three_segment_package(self):
         self.assertEqual(validate_visual_package(GOOD, SOURCE), ([], []))
@@ -172,6 +180,49 @@ class VisualChecks(unittest.TestCase):
         result=subprocess.run(cmd,capture_output=True,encoding="utf-8")
         self.assertEqual(result.returncode,2)
 
+
+    def test_content_driven_segment_package_passes(self):
+        self.assertEqual(validate_visual_package(GOOD12, SOURCE), ([], []))
+
+    def test_missing_segment_decision_table_fails_v16(self):
+        text = GOOD12.replace("【分段决策表】", "【其他表】")
+        self.assertCode("V16", text)
+
+    def test_missing_segment_strategy_fails_v16(self):
+        text = GOOD12.replace("【分段策略】：按内容关联判断；先保“开锁+放箱”与“抬门+进入”两个动作链，再在双手空闲、门关闭的稳定状态分段；不默认取上限，不均分。\n", "")
+        self.assertCode("V16", text)
+
+    def test_generic_segment_strategy_warns_v16(self):
+        text = GOOD12.replace(
+            "【分段策略】：按内容关联判断；先保“开锁+放箱”与“抬门+进入”两个动作链，再在双手空闲、门关闭的稳定状态分段；不默认取上限，不均分。",
+            "【分段策略】：默认30秒，均分。",
+        )
+        self.assertWarn("V16", text)
+        self.assertFalse(any(s.startswith("V16 ") for s in self.errors(text)))
+
+    def test_missing_segment_rationale_fails_v16(self):
+        text = GOOD12.replace("#### 分段依据 FORMAL_1", "#### 其他依据 FORMAL_1")
+        self.assertCode("V16", text)
+
+    def test_segment_duration_claim_must_match(self):
+        text = GOOD12.replace("【本段时长】：8.0秒 = 开锁2.0", "【本段时长】：9.0秒 = 开锁2.0")
+        self.assertCode("V16", text)
+
+    def test_segment_over_model_capability_fails_v6(self):
+        text = GOOD12.replace("【单次生成时长能力】：0–30秒之间任意时长", "【单次生成时长能力】：0–8秒之间任意时长")
+        self.assertCode("V6", text)
+
+    def test_1_2_legacy_capability_field_warns(self):
+        text = GOOD12.replace(
+            "【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；本场实际段长按内容判断，未取上限。",
+            "【单段时长上限】：30秒",
+        )
+        self.assertWarn("V6", text)
+        self.assertFalse(any(s.startswith("V6 ") for s in self.errors(text)))
+
+    def test_1_1_does_not_require_v16(self):
+        self.assertEqual(self.errors(GOOD), [])
+        self.assertFalse(any(s.startswith("V16 ") for s in self.warnings(GOOD)))
 
     def combat_fixture(self):
         # Synthetic structural fixture, not claimed to be a semantically reviewed fight/media.

@@ -34,6 +34,7 @@ def main():
         ['scripts/check_episode.py','examples/screenplay-standard.md','--format','standard'],
         ['scripts/check_episode.py','examples/screenplay-extended.md','--format','long'],
         ['scripts/check_episode.py','examples/storyboard-scene.md','--scope','visual','--source','examples/storyboard-source.md'],
+        ['scripts/check_episode.py','examples/storyboard-content-segmented.md','--scope','visual','--source','examples/storyboard-source.md'],
         ['scripts/check_episode.py','examples/faithful-fight-scene.md','--scope','visual','--require-visual','--source','examples/faithful-fight-source.md'],
     ]
     for fixture in sorted((ROOT/'examples/fight').glob('*.json')):

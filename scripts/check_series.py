@@ -22,7 +22,7 @@
     S6  付费墙落位: 三档总集数下墙集区间内无"墙"标记行         WARN
     S7  台账必备四表齐全                                      FAIL(缺表)
     S8  反转手段轮换: 反转手段矩阵表相邻3集内复用同一[A-I]标签  WARN
-    S9  视觉制作基线与资产账字段缺失                              WARN（存在视觉制作账时）
+    S9  视觉制作基线与资产账字段缺失（含单次生成时长能力/分段策略）                              WARN（存在视觉制作账时）
     S10 稳定事件链 ID 同场重复、为空或占位                                  WARN（存在视觉制作账时）
     S11 斗法扩展未登记目标/规则/代价/痕迹/复算                    WARN（存在斗法扩展时）
         (A身份压制/B铁证如山/C盟友倒戈/D降维制裁/E诛心破防/F纯粹武力
@@ -226,11 +226,30 @@ def _table_kind(titles):
 
 def _validate_visual_ledger(body, warns):
     """S9~S11 只核对文本结构；不认证语义、图片已读或平台媒体可用。"""
-    for label in ("视频画幅", "全片风格", "单段时长上限", "当前视觉版本"):
+    def field_values(label):
         # 空白只允许在本行；不能用 \s* 吞掉下一字段前的换行。
-        values = re.findall(r"^[ \t]*(?:【" + label + r"】|" + label + r")[ \t]*[：:][ \t]*([^\r\n]*)", body, re.M)
+        return re.findall(r"^[ \t]*(?:【" + label + r"】|" + label + r")[ \t]*[：:][ \t]*([^\r\n]*)", body, re.M)
+
+    for label in ("视频画幅", "全片风格", "当前视觉版本"):
+        values = field_values(label)
         if not values or any(_unfilled(value, (label,)) for value in values):
             warns.append(f"S9 视觉制作账缺少{label}实际值（为空、占位或仅含字段名）")
+    capability_labels = ("单次生成时长能力", "单段时长上限")
+    capability_found = False
+    capability_used = ""
+    for label in capability_labels:
+        values = field_values(label)
+        if values and not any(_unfilled(value, (label,)) for value in values):
+            capability_found = True
+            capability_used = label
+            break
+    if not capability_found:
+        warns.append("S9 视觉制作账缺少单次生成时长能力/单段时长上限实际值（为空、占位或仅含字段名）")
+    strategy = field_values("分段策略")
+    if strategy and any(_unfilled(value, ("分段策略",)) for value in strategy):
+        warns.append("S9 视觉制作账分段策略为空、占位或仅含字段名")
+    elif capability_used == "单次生成时长能力" and not strategy:
+        warns.append("S9 视觉制作账使用单次生成时长能力时须同时写分段策略实际值")
 
     tables = _visual_tables(body)
     asset_tables = [table for table in tables if _table_kind(table[0]) == "asset"]

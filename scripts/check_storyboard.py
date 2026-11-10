@@ -3,7 +3,9 @@
 Natural-language meaning, physical reachability and platform execution remain manual review.
 V1 package/baseline, V2 values, V3 shot clock, V4 shot fields, V5 state,
 V6 segment budget, V7 frames, V8 handoff, V9 combat, V10 pivotal frames,
-V11 lighting, V12 fallback, V13 prompt text, V14 source speech, V15 masters.
+V11 lighting, V12 fallback, V13 prompt text, V14 source speech, V15 masters,
+V16 segmentation rationale/capability (1.2). V16 checks records and hard bounds,
+not whether the chosen dramatic boundary or duration is artistically right.
 """
 from __future__ import annotations
 
@@ -19,7 +21,7 @@ SPAN = re.compile(r"^\s*(" + NUMBER + r")\s*[–—~～\-]\s*(" + NUMBER + r")\s
 SHOT = re.compile(r"^#{3,4}[ \t]+镜头[ \t]*(S?\d+)[ \t]*[｜|][ \t]*(FORMAL_\d+)[ \t]*[｜|][ \t]*(" + NUMBER + r")[ \t]*[–—~～\-][ \t]*(" + NUMBER + r")[ \t]*秒[^\n]*$", re.M)
 FRAME = re.compile(r"^#{3,4}[ \t]+关键帧[ \t]+(K\d+)[ \t]*[｜|][ \t]*(single|prep|contact|result|handoff)[ \t]*[｜|][ \t]*(S?\d+)[ \t]*[｜|][ \t]*(" + NUMBER + r")[ \t]*秒[^\n]*$", re.M)
 EPS = 1e-6
-MAJOR = ("资产清单", "稳定事件链", "战斗动作拍", "代价账", "战场痕迹", "时长预算与分段", "完整导演分镜", "逐镜关键帧", "视频提示词母稿", "模型适配稿", "检查证据")
+MAJOR = ("资产清单", "稳定事件链", "战斗动作拍", "代价账", "战场痕迹", "时长预算与分段", "分段决策表", "分段表", "完整导演分镜", "逐镜关键帧", "视频提示词母稿", "模型适配稿", "检查证据")
 EMPTY = re.compile(r"^(?:[_＿\-—.。…\s]+|待填(?:写)?|未填(?:写)?|待补(?:充)?|TODO|TBD|同上|略|无|不需要|N/?A)$", re.I)
 
 
@@ -120,6 +122,65 @@ def seconds(raw):
     return result if math.isfinite(result) and result > 0 else None
 
 
+def claimed_seconds(raw):
+    """Read a leading duration claim, allowing a following explanation.
+
+    ``8.0秒 = 开锁2.0 + 放箱2.0`` claims 8.0 seconds; the rest is the
+    content-budget rationale, not another duration option.
+    """
+    match = re.match(r"[ \t]*(" + NUMBER + r")[ \t]*(?:秒|s)?", raw or "")
+    if not match:
+        return None
+    result = float(match.group(1))
+    return result if math.isfinite(result) and result > 0 else None
+
+
+def capability(raw):
+    """Read a model duration capability: range, max, single option or option list."""
+    text = (raw or "").strip()
+    if not text or text.startswith(("未确认", "未指定", "未知", "UNKNOWN", "unknown")):
+        return None
+    match = re.search(r"(" + NUMBER + r")[ \t]*(?:秒|s)?[ \t]*(?:[–—~～\-]|到|至)[ \t]*(" + NUMBER + r")", text)
+    if match:
+        high = float(match.group(2))
+        return high if math.isfinite(high) and high > 0 else None
+    match = re.search(r"(?:最大|最长|不超过|上限)[ \t]*(" + NUMBER + r")[ \t]*(?:秒|s)?", text)
+    if match:
+        high = float(match.group(1))
+        return high if math.isfinite(high) and high > 0 else None
+    match = re.fullmatch(r"[ \t]*(" + NUMBER + r")[ \t]*(?:秒|s)?(?:[ \t]*[（(].*[）)]|[；;，,][^\n]*)?[ \t]*", text)
+    if match:
+        high = float(match.group(1))
+        return high if math.isfinite(high) and high > 0 else None
+    numbers = [float(item) for item in re.findall(NUMBER, text)]
+    if numbers:
+        high = max(numbers)
+        return high if math.isfinite(high) and high > 0 else None
+    return None
+
+
+def segment_rationales(text):
+    """Return per-FORMAL ``#### 分段依据`` blocks, stopping at the next heading."""
+    pattern = re.compile(r"(?m)^#{3,4}[ \t]+分段依据[ \t]+(FORMAL_\d+)[^\n]*\n")
+    hits = list(pattern.finditer(text))
+    result = {}
+    for index, hit in enumerate(hits):
+        tail = text[hit.end():hits[index + 1].start() if index + 1 < len(hits) else len(text)]
+        stop = re.search(r"(?m)^#{1,6}[ \t]+|^【(?:完整导演分镜|逐镜关键帧|视频提示词母稿|模型适配稿|检查证据|视觉制作包结束)】", tail)
+        result[hit.group(1)] = (tail[:stop.start()] if stop else tail).strip()
+    return result
+
+
+def generic_reason(text):
+    """True when a rationale uses default/equal-split/fill language without negation."""
+    for match in re.finditer(r"默认|取上限|按上限|均分|平均|按[ \t]*30[ \t]*秒|凑", text or ""):
+        prefix = (text or "")[max(0, match.start() - 6):match.start()]
+        if any(word in prefix for word in ("不", "非", "未")):
+            continue
+        return True
+    return False
+
+
 def parse_masters(text):
     pattern = re.compile(r"^#{3,4}[ \t]+提交段[ \t]+(FORMAL_\d+)[^\n]*\n[ \t]*\n?\x60{3}(?:text)?[ \t]*\n(.*?)^\x60{3}[ \t]*$", re.M | re.S)
     return [(m.group(1), m.group(2).strip()) for m in pattern.finditer(text)]
@@ -183,25 +244,40 @@ class Check:
 
 
 def _check_package(body, check, source_text):
-    if value(body, "包版本") != "1.1":
+    version = value(body, "包版本")
+    if version not in ("1.1", "1.2"):
         check.warn("V1", "输入为旧版/未标文本契约；按1.1模板整理真实已有产物，以下未解析字段不等于剧情缺陷")
-    required = ("视频画幅", "全片风格", "单段时长上限", "整场时长", "源文覆盖", "场级观看任务", "范围类型", "场景类型")
+    required = ("视频画幅", "全片风格", "整场时长", "源文覆盖", "场级观看任务", "范围类型", "场景类型")
     for field in required:
         if not usable(value(body, field)):
             check.fail("V2", f"【{field}】缺少实际值（空白、占位或下一行标题均不算填写）")
+    cap_raw = value(body, "单次生成时长能力")
+    legacy_raw = value(body, "单段时长上限")
+    if version == "1.2":
+        if not usable(cap_raw):
+            if usable(legacy_raw):
+                check.warn("V6", "1.2包使用旧字段【单段时长上限】；新交付建议写【单次生成时长能力】")
+                cap_raw = legacy_raw
+            else:
+                check.fail("V2", "【单次生成时长能力】缺少实际值（空白、占位或下一行标题均不算填写）")
+    else:
+        if not usable(legacy_raw):
+            check.fail("V2", "【单段时长上限】缺少实际值（空白、占位或下一行标题均不算填写）")
+        cap_raw = legacy_raw
     for field in ("视觉制作基线", "资产清单", "稳定事件链", "时长预算与分段", "完整导演分镜", "逐镜关键帧", "视频提示词母稿"):
         if not re.search(r"(?m)^【" + field + r"】", body):
             check.fail("V1", f"缺少【{field}】")
     total = seconds(value(body, "整场时长"))
     if total is None:
         check.fail("V3", "【整场时长】须为正有限秒数，不能用单段时长代表整场")
-    limit_raw = value(body, "单段时长上限")
-    limit = seconds(limit_raw)
+    limit = capability(cap_raw)
     if limit is None:
-        if limit_raw.startswith(("未确认", "未指定", "未知")):
-            check.warn("V6", "单段上限未确认：当前仅是通用文字方案，不代表特定平台可直接提交")
+        if cap_raw.startswith(("未确认", "未指定", "未知")):
+            check.warn("V6", "单次生成时长能力未确认：当前仅是通用文字方案，不代表特定平台可直接提交")
         else:
-            check.fail("V6", "单段上限格式应为正秒数或明确的未指定状态")
+            check.fail("V6", "单次生成时长能力格式应为正秒数/范围，或明确的未指定状态")
+    elif limit > 30 + EPS:
+        check.warn("V6", f"能力上限{limit:g}秒高于当前0–30秒前提；请确认模型实际能力与依据")
     if aspect(value(body, "视频画幅")) is None:
         check.fail("V2", "视频画幅须有唯一正数比例，可在括号或分号后保留来源注记")
     scene_type = value(body, "场景类型")
@@ -290,10 +366,12 @@ def _check_package(body, check, source_text):
         segments[fid]=dict(start=a,end=b,row=row,owned=owned)
         end_prev=b
     if not segments or (total is not None and abs(end_prev-total)>EPS):
-        check.fail('V6','分段表必须按整镜连续覆盖整场，单段上限不能拿整场长度比较')
+        check.fail('V6','分段表必须按整镜连续覆盖整场，单次生成时长能力不能拿整场长度比较')
     for s in shots.values():
         if s['formal'] not in segments:
             check.fail('V6',f"镜头{s['id']}所属{s['formal']}不在分段表")
+
+    _check_segmentation(body, check, version, segments, limit)
 
     frames, handoffs = {}, []
     frame_blocks = blocks(section(body, "逐镜关键帧"), FRAME)
@@ -396,6 +474,64 @@ def _check_package(body, check, source_text):
             actual.extend(source_dialogue(prompt))
         if Counter(source)!=Counter(actual) or source!=actual:
             check.fail('V14','视频母稿台词的说话人、逐字内容、次数或顺序与指定原文不同')
+
+
+def _check_segmentation(body, check, version, segments, cap):
+    """V16: 1.2 records why each segment has this duration and boundary.
+
+    It checks presence, hard bounds and generic language only. It does not
+    judge whether the chosen dramatic boundary is right.
+    """
+    if version != "1.2":
+        return
+    strategy = value(body, "分段策略")
+    if not usable(strategy):
+        check.fail("V16", "【分段策略】缺少实际值；1.2须说明按内容关联分段")
+    elif generic_reason(strategy):
+        check.warn("V16", "【分段策略】含默认/均分/取上限表述；应写具体内容关联判断")
+    decision = section(body, "分段决策表")
+    decision_rows = tables(decision) if decision else []
+    if not decision_rows:
+        check.fail("V16", "1.2须有【分段决策表】并列出候选方案")
+    else:
+        decision_text = " ".join(" ".join(row.values()) for row in decision_rows)
+        if not re.search(r"否决|不采用|备选|放弃|淘汰|未选|落选", decision_text):
+            check.warn("V16", "【分段决策表】没有记录被否决/备选的候选；需体现比较过程")
+    rationales = segment_rationales(body)
+    durations = []
+    for fid, seg in segments.items():
+        actual = seg['end'] - seg['start']
+        durations.append(actual)
+        row = seg['row']
+        row_duration = row.get('本段时长', '')
+        if usable(row_duration):
+            stated_row = claimed_seconds(row_duration)
+            if stated_row is None or abs(stated_row - actual) > EPS:
+                check.fail("V16", f"{fid}分段表【本段时长】与全场时码{actual:g}秒不一致")
+        block = rationales.get(fid, '')
+        if not usable(block):
+            table_reason = row.get('分段依据', '') or row.get('内容单元与关联依据', '')
+            if not usable(table_reason):
+                check.fail("V16", f"{fid}缺少【分段依据】；1.2须记录归组内容、时长、边界与风险")
+                continue
+            block = "【归组内容】：" + table_reason
+        for field in ("归组内容", "本段时长", "边界状态"):
+            if not usable(value(block, field)):
+                check.fail("V16", f"{fid}【分段依据】缺少{field}实际内容")
+        if not usable(value(block, "风险")) and not usable(value(block, "风险与返修")):
+            check.fail("V16", f"{fid}【分段依据】缺少风险实际内容")
+        stated = claimed_seconds(value(block, "本段时长"))
+        if stated is None or abs(stated - actual) > EPS:
+            check.fail("V16", f"{fid}【分段依据】本段时长与分段表{actual:g}秒不一致")
+        group = value(block, "归组内容")
+        if group and not re.search(r"(?:EP\d+-SC\d+-)?C\d+|S\d+", group):
+            check.warn("V16", f"{fid}【归组内容】未引用事件链或镜头ID，需人工复核")
+        if generic_reason(block):
+            check.warn("V16", f"{fid}【分段依据】含默认/均分/凑时长表述，需人工复核")
+        if cap is not None and abs(actual - cap) <= EPS and not re.search(r"内容|动作|台词|状态|边界|余韵|停顿", block):
+            check.warn("V16", f"{fid}段长恰好等于能力上限，依据未见内容说明")
+    if len(durations) > 1 and len({round(item, 6) for item in durations}) == 1:
+        check.warn("V16", "所有段长完全相同；确认不是均分，需人工复核依据")
 
 
 def _lint_prompt(text, fid, check):
