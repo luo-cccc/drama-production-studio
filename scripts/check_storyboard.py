@@ -4,7 +4,7 @@ Natural-language meaning, physical reachability and platform execution remain ma
 V1 package/baseline, V2 values, V3 shot clock, V4 shot fields, V5 state,
 V6 segment budget, V7 frames, V8 handoff, V9 combat, V10 pivotal frames,
 V11 lighting, V12 fallback, V13 prompt text, V14 source speech, V15 masters,
-V16 segmentation rationale/capability (1.2). V16 checks records and hard bounds,
+V16 segmentation rationale/capability (2.0). V16 checks records and hard bounds,
 not whether the chosen dramatic boundary or duration is artistically right.
 """
 from __future__ import annotations
@@ -245,25 +245,15 @@ class Check:
 
 def _check_package(body, check, source_text):
     version = value(body, "包版本")
-    if version not in ("1.1", "1.2"):
-        check.warn("V1", "输入为旧版/未标文本契约；按1.1模板整理真实已有产物，以下未解析字段不等于剧情缺陷")
+    if version != "2.0":
+        check.fail("V1", "仅支持视觉文本契约2.0；1.1/1.2旧包不再兼容，请按2.0重交")
     required = ("视频画幅", "全片风格", "整场时长", "源文覆盖", "场级观看任务", "范围类型", "场景类型")
     for field in required:
         if not usable(value(body, field)):
             check.fail("V2", f"【{field}】缺少实际值（空白、占位或下一行标题均不算填写）")
     cap_raw = value(body, "单次生成时长能力")
-    legacy_raw = value(body, "单段时长上限")
-    if version == "1.2":
-        if not usable(cap_raw):
-            if usable(legacy_raw):
-                check.warn("V6", "1.2包使用旧字段【单段时长上限】；新交付建议写【单次生成时长能力】")
-                cap_raw = legacy_raw
-            else:
-                check.fail("V2", "【单次生成时长能力】缺少实际值（空白、占位或下一行标题均不算填写）")
-    else:
-        if not usable(legacy_raw):
-            check.fail("V2", "【单段时长上限】缺少实际值（空白、占位或下一行标题均不算填写）")
-        cap_raw = legacy_raw
+    if not usable(cap_raw):
+        check.fail("V2", "【单次生成时长能力】缺少实际值（空白、占位或下一行标题均不算填写）")
     for field in ("视觉制作基线", "资产清单", "稳定事件链", "时长预算与分段", "完整导演分镜", "逐镜关键帧", "视频提示词母稿"):
         if not re.search(r"(?m)^【" + field + r"】", body):
             check.fail("V1", f"缺少【{field}】")
@@ -477,22 +467,22 @@ def _check_package(body, check, source_text):
 
 
 def _check_segmentation(body, check, version, segments, cap):
-    """V16: 1.2 records why each segment has this duration and boundary.
+    """V16: 2.0 records why each segment has this duration and boundary.
 
     It checks presence, hard bounds and generic language only. It does not
     judge whether the chosen dramatic boundary is right.
     """
-    if version != "1.2":
+    if version != "2.0":
         return
     strategy = value(body, "分段策略")
     if not usable(strategy):
-        check.fail("V16", "【分段策略】缺少实际值；1.2须说明按内容关联分段")
+        check.fail("V16", "【分段策略】缺少实际值；2.0须说明按内容关联分段")
     elif generic_reason(strategy):
         check.warn("V16", "【分段策略】含默认/均分/取上限表述；应写具体内容关联判断")
     decision = section(body, "分段决策表")
     decision_rows = tables(decision) if decision else []
     if not decision_rows:
-        check.fail("V16", "1.2须有【分段决策表】并列出候选方案")
+        check.fail("V16", "2.0须有【分段决策表】并列出候选方案")
     else:
         decision_text = " ".join(" ".join(row.values()) for row in decision_rows)
         if not re.search(r"否决|不采用|备选|放弃|淘汰|未选|落选", decision_text):
@@ -512,7 +502,7 @@ def _check_segmentation(body, check, version, segments, cap):
         if not usable(block):
             table_reason = row.get('分段依据', '') or row.get('内容单元与关联依据', '')
             if not usable(table_reason):
-                check.fail("V16", f"{fid}缺少【分段依据】；1.2须记录归组内容、时长、边界与风险")
+                check.fail("V16", f"{fid}缺少【分段依据】；2.0须记录归组内容、时长、边界与风险")
                 continue
             block = "【归组内容】：" + table_reason
         for field in ("归组内容", "本段时长", "边界状态"):
@@ -530,7 +520,8 @@ def _check_segmentation(body, check, version, segments, cap):
             check.warn("V16", f"{fid}【分段依据】含默认/均分/凑时长表述，需人工复核")
         if cap is not None and abs(actual - cap) <= EPS and not re.search(r"内容|动作|台词|状态|边界|余韵|停顿", block):
             check.warn("V16", f"{fid}段长恰好等于能力上限，依据未见内容说明")
-    if len(durations) > 1 and len({round(item, 6) for item in durations}) == 1:
+    if (len(durations) > 1 and len({round(item, 6) for item in durations}) == 1
+            and not re.search(r"用户指定|用户要求|用户锁定|指定.{0,8}上限", strategy)):
         check.warn("V16", "所有段长完全相同；确认不是均分，需人工复核依据")
 
 

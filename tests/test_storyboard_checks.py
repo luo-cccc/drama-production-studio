@@ -74,7 +74,7 @@ class VisualChecks(unittest.TestCase):
         self.assertCode("V5", left + "#### 镜头 S02" + right)
 
     def test_each_segment_limit(self):
-        self.assertCode("V6", GOOD.replace("【单段时长上限】：6秒", "【单段时长上限】：5秒"))
+        self.assertCode("V6", GOOD.replace("【单次生成时长能力】：0–30秒之间任意时长", "【单次生成时长能力】：0–5秒之间任意时长"))
 
     def test_total_longer_than_limit_is_valid_when_split(self):
         self.assertEqual(self.errors(GOOD), [])  # 18 seconds total; 3 x 6s, not 18 > 6.
@@ -212,17 +212,16 @@ class VisualChecks(unittest.TestCase):
         text = GOOD12.replace("【单次生成时长能力】：0–30秒之间任意时长", "【单次生成时长能力】：0–8秒之间任意时长")
         self.assertCode("V6", text)
 
-    def test_1_2_legacy_capability_field_warns(self):
+    def test_old_capability_field_is_rejected(self):
         text = GOOD12.replace(
             "【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；本场实际段长按内容判断，未取上限。",
             "【单段时长上限】：30秒",
         )
-        self.assertWarn("V6", text)
-        self.assertFalse(any(s.startswith("V6 ") for s in self.errors(text)))
+        self.assertCode("V2", text)
 
-    def test_1_1_does_not_require_v16(self):
-        self.assertEqual(self.errors(GOOD), [])
-        self.assertFalse(any(s.startswith("V16 ") for s in self.warnings(GOOD)))
+    def test_old_contract_version_is_rejected(self):
+        text = GOOD.replace("【包版本】：2.0", "【包版本】：1.1")
+        self.assertCode("V1", text)
 
     def combat_fixture(self):
         # Synthetic structural fixture, not claimed to be a semantically reviewed fight/media.
@@ -319,7 +318,7 @@ class VisualChecks(unittest.TestCase):
 
 
     def test_duration_with_real_confirmation_note(self):
-        self.assertEqual(self.errors(GOOD.replace('【单段时长上限】：6秒（用户指定）','【单段时长上限】：6秒；来源：用户已确认，仅本项目。')),[])
+        self.assertEqual(self.errors(GOOD.replace('【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；本场按用户指定6秒上限分段。', '【单次生成时长能力】：0–30秒之间任意时长；来源：用户已确认，仅本项目。')),[])
 
     def test_budget_table_not_confused_with_segment_assignment(self):
         budget='| 段号 | 内容 |\n|---|---|\n| FORMAL_1 | 台词2.8秒与动作并行 |\n'
@@ -370,7 +369,7 @@ class VisualChecks(unittest.TestCase):
 
 
     def test_comma_duration_explanation(self):
-        candidate=GOOD.replace('【单段时长上限】：6秒（用户指定）','【单段时长上限】：6秒，用户明确指定；平台选项未知。').replace('【整场时长】：18秒','【整场时长】：18秒，用户定稿锁定。')
+        candidate=GOOD.replace('【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；本场按用户指定6秒上限分段。', '【单次生成时长能力】：0–30秒之间任意时长，用户明确指定；平台选项未知。').replace('【整场时长】：18秒','【整场时长】：18秒，用户定稿锁定。')
         self.assertEqual(self.errors(candidate),[])
 
     def test_outcome_directive_is_not_an_actor(self):

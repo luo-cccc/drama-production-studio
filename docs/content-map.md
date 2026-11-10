@@ -61,7 +61,7 @@
 |---|---|
 | [剧本](../templates/screenplay-template.md) | 标准、漫剧和长档完整单集填写结构。 |
 | [项目台账](../templates/project-ledger-template.md) | 故事四账、回合、热/冷状态及同项目视觉制作账。 |
-| [视觉制作包](../templates/storyboard-package-template.md) | 文本契约1.2，预算、分段决策、镜头、帧、各段母稿与证据；1.1旧包兼容。 |
+| [视觉制作包](../templates/storyboard-package-template.md) | 文本契约2.0，预算、分段决策、镜头、帧、各段母稿与证据；不兼容旧版。 |
 
 ## 示例
 
@@ -69,9 +69,9 @@
 |---|---|
 | [标准单集](../examples/screenplay-standard.md) | 标准档整集剧本。 |
 | [长档单集](../examples/screenplay-extended.md) | 双回合与中段小钩。 |
-| [场景原文](../examples/storyboard-source.md) / [完整制作包](../examples/storyboard-scene.md) | 18秒完整场景，三段，每段6秒；保留作短窗口/1.1兼容示例。 |
-| [内容驱动分段](../examples/storyboard-content-segmented.md) | 同一18秒场景按内容拆8+10，1.2分段决策、依据、段内多镜与逐段母稿。 |
-| [忠实斗法原文](../examples/faithful-fight-source.md) / [完整制作包](../examples/faithful-fight-scene.md) | 6秒短窗口/1.1兼容示例：两段、无对白、单次接触与无伤罢手。 |
+| [场景原文](../examples/storyboard-source.md) / [完整制作包](../examples/storyboard-scene.md) | 18秒完整场景，三段，每段6秒；保留作短窗口2.0示例。 |
+| [内容驱动分段](../examples/storyboard-content-segmented.md) | 同一18秒场景按内容拆8+10，2.0分段决策、依据、段内多镜与逐段母稿。 |
+| [忠实斗法原文](../examples/faithful-fight-source.md) / [完整制作包](../examples/faithful-fight-scene.md) | 6秒短窗口2.0示例：两段、无对白、单次接触与无伤罢手。 |
 | [剑与近战](../examples/fight/sword-duel.json) | 剑斗、身体接点与攻防。 |
 | [阵法救援](../examples/fight/formation-rescue.json) | 阵法、救援目标与资源支出。 |
 | [御空法相](../examples/fight/aerial-manifestation.json) | 空间尺度、御空与法相。 |
@@ -83,7 +83,7 @@
 |---|---|
 | [check_episode.py](../scripts/check_episode.py) | 单集与视觉制作包的统一校验入口，也支持可选战斗JSON。 |
 | [check_series.py](../scripts/check_series.py) | 故事台账与视觉连续性。 |
-| [check_storyboard.py](../scripts/check_storyboard.py) | 内部V1～V16检查，含1.2分段决策记录。 |
+| [check_storyboard.py](../scripts/check_storyboard.py) | 内部V1～V16检查，含2.0分段决策记录。 |
 | [fight_contract.py](../scripts/fight_contract.py) | 内部JSON1.1/1.2校验与六项同源导出。 |
 | [verify_package.py](../scripts/verify_package.py) | 总检与输入SHA证据。 |
 

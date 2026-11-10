@@ -1,6 +1,6 @@
 {
   "package": "drama-production-studio",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "date": "2026-11-07",
   "previous_package": "short-drama-factory",
   "previous_directory": "short-drama-factory-master",
@@ -73,7 +73,7 @@
     "LICENSE",
     "eight conversation modes",
     "E1-E26, V1-V16, S1-S11",
-    "visual text 1.2 (1.1 compatible)",
+    "visual text 2.0",
     "combat JSON 1.1/1.2",
     "existing CLI flags",
     "export file names"

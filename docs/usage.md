@@ -31,7 +31,7 @@ python -X utf8 -B scripts/check_episode.py examples/screenplay-standard.md --for
 python -X utf8 -B scripts/check_episode.py examples/screenplay-extended.md --format long
 # 定稿短场：不套整集E阈值；--source对应精确原文
 python -X utf8 -B scripts/check_episode.py examples/storyboard-scene.md --scope visual --source examples/storyboard-source.md
-# 1.2内容驱动分段示例：同一场拆8+10，检查V16分段依据
+# 2.0内容驱动分段示例：同一场拆8+10，检查V16分段依据
 python -X utf8 -B scripts/check_episode.py examples/storyboard-content-segmented.md --scope visual --source examples/storyboard-source.md
 # 新交付必须有制作包时
 python -X utf8 -B scripts/check_episode.py 项目/单集制作稿.md --require-visual
@@ -52,8 +52,8 @@ python -X utf8 -B scripts/check_episode.py --combat-json examples/fight/sword-du
 
 ## 评估结果的含义
 
-E检查剧本的结构和粗估，V检查视觉包结构、显式状态、时轴及对白，S检查系列台账。V16只检查1.2的分段决策记录、能力范围、段长依据和边界记录，不判断叙事合理性；未给源文不宣称完成逐字保真。台词识别之外的动作、揭示和结果需语义复核；平台能力、实际输入和媒体观察另外记录。
+E检查剧本的结构和粗估，V检查视觉包结构、显式状态、时轴及对白，S检查系列台账。V16只检查2.0的分段决策记录、能力范围、段长依据和边界记录，不判断叙事合理性；未给源文不宣称完成逐字保真。台词识别之外的动作、揭示和结果需语义复核；平台能力、实际输入和媒体观察另外记录。
 
-视觉文本契约当前为1.2：新增【单次生成时长能力】、分段策略、分段决策表、每段【分段依据】和段内多镜母稿写法。1.1旧包继续可读，使用【单段时长上限】并跳过V16。分段判断按[分段决策](../references/production/segment-planning.md)：模型支持0–30秒之间任意时长，但每段长度由内容关联、自然时长和稳定边界决定，不默认取上限、不均分。
+视觉文本契约当前为2.0：只接受2.0包，不再兼容1.1/1.2旧包，旧包须按2.0重交。【单次生成时长能力】、分段策略、分段决策表、每段【分段依据】和段内多镜母稿写法为必填。分段判断按[分段决策](../references/production/segment-planning.md)：模型支持0–30秒之间任意时长，但每段长度由内容关联、自然时长和稳定边界决定，不默认取上限、不均分。
 
 制作预算先计话轮、动作、阅读、停顿及顺并行关系，再核目标时长。E16的粗估×1.20不能当试读结果；没有试读或测量时写ESTIMATED。真实发布要求按当时官方材料核对，本地扫描不表示平台已审核。

@@ -234,22 +234,12 @@ def _validate_visual_ledger(body, warns):
         values = field_values(label)
         if not values or any(_unfilled(value, (label,)) for value in values):
             warns.append(f"S9 视觉制作账缺少{label}实际值（为空、占位或仅含字段名）")
-    capability_labels = ("单次生成时长能力", "单段时长上限")
-    capability_found = False
-    capability_used = ""
-    for label in capability_labels:
-        values = field_values(label)
-        if values and not any(_unfilled(value, (label,)) for value in values):
-            capability_found = True
-            capability_used = label
-            break
-    if not capability_found:
-        warns.append("S9 视觉制作账缺少单次生成时长能力/单段时长上限实际值（为空、占位或仅含字段名）")
+    capability = field_values("单次生成时长能力")
+    if not capability or any(_unfilled(value, ("单次生成时长能力",)) for value in capability):
+        warns.append("S9 视觉制作账缺少单次生成时长能力实际值（为空、占位或仅含字段名）")
     strategy = field_values("分段策略")
-    if strategy and any(_unfilled(value, ("分段策略",)) for value in strategy):
-        warns.append("S9 视觉制作账分段策略为空、占位或仅含字段名")
-    elif capability_used == "单次生成时长能力" and not strategy:
-        warns.append("S9 视觉制作账使用单次生成时长能力时须同时写分段策略实际值")
+    if not strategy or any(_unfilled(value, ("分段策略",)) for value in strategy):
+        warns.append("S9 视觉制作账缺少分段策略实际值（为空、占位或仅含字段名）")
 
     tables = _visual_tables(body)
     asset_tables = [table for table in tables if _table_kind(table[0]) == "asset"]

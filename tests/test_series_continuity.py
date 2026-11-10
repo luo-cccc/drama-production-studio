@@ -40,7 +40,8 @@ LEGACY = """# 全剧台账
 """
 BASELINE = """【视频画幅】：9:16
 【全片风格】：写实仙侠，湿石与暗铜
-【单段时长上限】：12秒（项目决定）
+【单次生成时长能力】：0–30秒之间任意时长
+【分段策略】：按内容关联判断；不默认取上限，不均分。
 【当前视觉版本】：v2
 """
 ASSET_HEADERS = ("资产", "稳定锚点", "当前状态", "持有/所在", "适用集场", "提示词", "图片已读", "平台可用")
@@ -91,24 +92,21 @@ class VisualLedgerTests(unittest.TestCase):
     def test_combat_extension_is_optional(self):
         self.assertEqual(series.validate_ledger(ledger(combats=None)), ([], [], 30))
 
-    def test_new_capability_and_strategy_fields_are_accepted(self):
+    def test_old_capability_field_is_not_accepted(self):
         baseline = BASELINE.replace(
-            "【单段时长上限】：12秒（项目决定）",
             "【单次生成时长能力】：0–30秒之间任意时长\n【分段策略】：按内容关联判断；不默认取上限，不均分。",
-        )
-        self.assertEqual(series.validate_ledger(ledger(baseline=baseline)), ([], [], 30))
-
-    def test_new_capability_without_strategy_warns_s9(self):
-        baseline = BASELINE.replace(
             "【单段时长上限】：12秒（项目决定）",
-            "【单次生成时长能力】：0–30秒之间任意时长",
         )
+        self.assertTrue(any("单次生成时长能力" in message for message in warnings(ledger(baseline=baseline), "S9")))
+
+    def test_missing_strategy_warns_s9(self):
+        baseline = BASELINE.replace("【分段策略】：按内容关联判断；不默认取上限，不均分。\n", "")
         self.assertTrue(any("分段策略" in message for message in warnings(ledger(baseline=baseline), "S9")))
 
     def test_empty_strategy_warns_s9(self):
         baseline = BASELINE.replace(
-            "【单段时长上限】：12秒（项目决定）",
-            "【单次生成时长能力】：0–30秒之间任意时长\n【分段策略】：",
+            "【分段策略】：按内容关联判断；不默认取上限，不均分。",
+            "【分段策略】：",
         )
         self.assertTrue(any("分段策略" in message for message in warnings(ledger(baseline=baseline), "S9")))
 
@@ -134,7 +132,7 @@ class VisualLedgerTests(unittest.TestCase):
     def test_other_sections_cannot_supply_visual_baseline(self):
         text = LEGACY + BASELINE + "\n## 视觉制作账\n" + ledger(baseline="").split("## 视觉制作账\n", 1)[1]
         text += "\n## 附录\n" + BASELINE
-        self.assertEqual(len([m for m in warnings(text, "S9") if "资产" not in m]), 4)
+        self.assertEqual(len([m for m in warnings(text, "S9") if "资产" not in m]), 5)
 
     def test_absent_or_empty_asset_table_warns(self):
         for rows in (None, ()):

@@ -1,19 +1,19 @@
-# 一体化视觉制作包模板（文本契约1.2）
+# 一体化视觉制作包模板（文本契约2.0）
 
 与单集正文共用同一原文/台账，已有定稿可直接进入本模板，不先补写新的故事。一个包对应一场或明确片段，文件可含多个包。编号与表格在导演记录里；每个提交段下的text代码块是独立可复制范围。方括号说明须替换为实际内容，不把模板原样当成成品。
 
-当前文本契约1.2；1.1旧包仍可读取，继续使用【单段时长上限】并标1.1。1.2新增【单次生成时长能力】、分段策略、分段决策表、每段【分段依据】和段内多镜母稿写法；这些字段用于记录“为什么这一段是这个长度、这个边界”，不替代语义审阅。
+当前文本契约2.0；不再兼容1.1/1.2旧包，旧包须按2.0重交。2.0要求【单次生成时长能力】、分段策略、分段决策表、每段【分段依据】和段内多镜母稿写法；这些字段用于记录“为什么这一段是这个长度、这个边界”，不替代语义审阅。
 
 资产图像完整写法见 [references/production/asset-prompts.md](../references/production/asset-prompts.md)，预算见 [references/production/timing-and-sync.md](../references/production/timing-and-sync.md)，分段判断见 [references/production/segment-planning.md](../references/production/segment-planning.md)，状态/返修见 [references/production/production-state.md](../references/production/production-state.md)。完整示例见 [examples/storyboard-scene.md](../examples/storyboard-scene.md) 与 [examples/storyboard-content-segmented.md](../examples/storyboard-content-segmented.md)。
 
 【视觉制作包】
 【视觉制作基线】
-【包版本】：1.2
+【包版本】：2.0
 【范围类型】：完整场/已明确片段（选一）
 【场景类型】：普通场/战斗场（选一）
 【视频画幅】：实际画幅
 【全片风格】：完整连贯风格正文（媒介、色彩、明暗、材质、成像和表演），每段母稿复用此有效正文。
-【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；写实际依据。旧项目可继续用【单段时长上限】并标1.1。
+【单次生成时长能力】：0–30秒之间任意时长（0到30秒可任意选择）；写实际依据。
 【分段策略】：按内容关联判断；不默认取上限，不均分，不为凑时长加空镜。
 【整场时长】：整场实际正数秒，不是某一段的长度。
 【源文覆盖】：项目路径/版本和本场原文起止；保留所有原台词与揭示顺序。
