@@ -3,7 +3,7 @@
 
 Adapted from the user-provided xianxia-fight-director-main/scripts/combat_plan.py
 on 2026-11-07 (source SHA-256: cd9dfc5298c7a81bff5d5975661d5d1eb8bac416fa688d1bbd645510d1e054c3).
-Provenance and the 1.1/1.2 contract: ../references/fight/fight-data-contract.md.
+Provenance and the 1.2 contract: ../references/fight/fight-data-contract.md.
 This module uses only the standard library and does not require the source tree.
 Natural-language production remains the default; this helper does not infer
 combat actions or certify semantic quality or generated media.
@@ -27,7 +27,7 @@ EXECUTION_TIME = re.compile(r"[0-9]+(?:\.[0-9]+)?\s*秒|[0-9]+(?:[:：][0-9]{1,2
 KINDS = {"character", "creature", "scene", "prop", "formation", "manifestation"}
 ACTORS = {"character", "creature", "manifestation"}
 ROOT = {"schema_version", "title", "duration_sec", "aspect_ratio", "style", "assumptions", "constraints", "design", "assets", "scene", "beats", "shots", "segments", "keyframes"}
-VERSIONS = ("1.1", "1.2")
+VERSIONS = ("1.2",)
 MARKS = ("pivotal", "breath", "adaptation")
 ROLES = {"single", "prep", "contact", "result", "handoff"}
 RISKS = {"low", "high"}
@@ -213,12 +213,8 @@ def validate(project):
         return errors
     version = project["schema_version"]
     if version not in VERSIONS:
-        fail("schema_version", "仅支持字符串版本 1.1 或 1.2；请升级旧版数据并编写镜头 execution 与段 prompt_context，不自动迁移自由文本")
-    craft = version == "1.2"
-    if not craft:
-        for key in ("cost", "knowledge"):
-            if key in project:
-                fail(key, "仅 1.2 支持该字段；1.1 数据不得混入 1.2 字段")
+        fail("schema_version", "仅支持字符串版本 1.2；1.1旧存档不再兼容，请升级并编写镜头 execution 与段 prompt_context，不自动迁移自由文本")
+    craft = True
     for key in ("title", "aspect_ratio", "style"):
         text(project[key], key)
     duration_ok = number(project["duration_sec"], "duration_sec")

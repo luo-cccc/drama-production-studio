@@ -26,7 +26,7 @@ SPEC.loader.exec_module(plan)
 
 
 def make_project():
-    """A small 1.1 plan independent of concurrently edited example files."""
+    """Base plan for building the 1.2 craft fixture; 1.1 itself is rejected by the contract."""
     assets = [
         {"id": key, "kind": kind, "name": name, "anchors": [name + "稳定锚点"],
          "states": [], "image_prompt": name + "资产图"}
@@ -132,7 +132,7 @@ def make_craft_project():
 
 class PlanTests(unittest.TestCase):
     def setUp(self):
-        self.project = make_project()
+        self.project = make_craft_project()
 
     def rejects(self, change, fragment):
         changed = copy.deepcopy(self.project)
@@ -243,6 +243,7 @@ class PlanTests(unittest.TestCase):
         beat["end"] = changed["shots"][1]["end"]
         for item in changed["beats"]:
             item["requires"] = []
+        changed["beats"][1]["requires"] = [changed["beats"][0]["id"]]
         for shot in changed["shots"][:2]:
             if beat["id"] not in shot["beat_ids"]:
                 shot["beat_ids"].append(beat["id"])
@@ -335,17 +336,10 @@ class PlanTests(unittest.TestCase):
     def test_schema_upgrade_required(self):
         self.assertEqual([], plan.validate(self.project))
         for version in ("1.0", 1.1, 1.2, "1.3", "1.1 "):
-            self.rejects(lambda p, version=version: p.update(schema_version=version), "升级")
+            self.rejects(lambda p, version=version: p.update(schema_version=version), "旧存档不再兼容")
 
-    def test_one_one_rejects_one_two_fields(self):
-        self.rejects(lambda p: p.update(cost=[]), "仅 1.2 支持该字段")
-        self.rejects(lambda p: p.update(knowledge=[]), "仅 1.2 支持该字段")
-        for change in (lambda p: p["shots"][0].update(light="x"),
-                       lambda p: p["shots"][0].update(risk="low"),
-                       lambda p: p["keyframes"][0].update(role="single"),
-                       lambda p: p["scene"].update(attrition=[]),
-                       lambda p: p["beats"][0].update(marks=["pivotal"])):
-            self.rejects(change, "未知字段")
+    def test_old_one_one_schema_is_rejected(self):
+        self.rejects(lambda p: p.update(schema_version="1.1"), "旧存档不再兼容")
 
     def test_execution_and_context_required_strict_fields(self):
         self.rejects(lambda p: p["shots"][0].pop("execution"), "缺少字段 execution")
@@ -445,7 +439,9 @@ class PlanTests(unittest.TestCase):
     def test_video_assets_are_segment_union_with_local_references(self):
         changed = copy.deepcopy(self.project)
         changed["shots"][2]["asset_ids"].remove("late_prop")
-        changed["keyframes"][2]["asset_ids"].remove("late_prop")
+        for frame in changed["keyframes"]:
+            if frame["shot_id"] == changed["shots"][2]["id"] and "late_prop" in frame["asset_ids"]:
+                frame["asset_ids"].remove("late_prop")
         changed["assets"][-1]["reference"] = {"source": "断碑参考.png", "control": "外观局部控制", "keep": "保留碑面裂纹", "exclude": "不继承旧光线"}
         unused = copy.deepcopy(changed["assets"][-1])
         unused.update(id="unused_prop", name="未用资产", anchors=["未用锚点"],
@@ -838,7 +834,7 @@ class InternalApiTests(unittest.TestCase):
         self.assertIn("本镜覆盖", plan.render(project)["03-storyboard.md"])
 
     def test_completion_dependencies_accept_touching_boundaries_and_reject_cycles(self):
-        project = make_project()
+        project = make_craft_project()
         self.assertEqual(project["beats"][0]["end"], project["beats"][1]["start"])
         self.assertEqual([], plan.validate(project))
         project["beats"][0]["requires"] = [project["beats"][1]["id"]]
@@ -847,11 +843,11 @@ class InternalApiTests(unittest.TestCase):
         self.assertTrue(any("循环" in error for error in errors))
 
     def test_timing_tolerance_does_not_hide_a_real_gap(self):
-        project = make_project()
+        project = make_craft_project()
         project["shots"][0]["end"] += plan.EPS / 2
         project["shots"][0]["execution"]["cues"][0]["end"] += plan.EPS / 2
         self.assertEqual([], plan.validate(project))
-        project = make_project()
+        project = make_craft_project()
         project["shots"][1]["start"] += plan.EPS * 2
         project["shots"][1]["execution"]["cues"][0]["start"] += plan.EPS * 2
         self.assertTrue(any("时间轴" in error for error in plan.validate(project)))
@@ -902,7 +898,7 @@ class StrictParsingTests(unittest.TestCase):
     def test_bom_utf8_and_finite_decimal_input_roundtrip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "中文存档.json"
-            for project in (make_project(), make_craft_project()):
+            for project in (make_craft_project(),):
                 project["duration_sec"] = 16.0
                 path.write_text(json.dumps(project, ensure_ascii=False), encoding="utf-8-sig")
                 loaded = plan.load_project(path)

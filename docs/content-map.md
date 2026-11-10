@@ -43,7 +43,7 @@
 | 文件 | 内容 |
 |---|---|
 | [fight-choreography.md](../references/fight/fight-choreography.md) | 斗法编舞与视听执行 |
-| [fight-data-contract.md](../references/fight/fight-data-contract.md) | 斗法JSON数据契约（1.1/1.2） |
+| [fight-data-contract.md](../references/fight/fight-data-contract.md) | 斗法JSON数据契约（1.2） |
 | [fight-mechanics.md](../references/fight/fight-mechanics.md) | 斗法机制与能力条件 |
 
 ## 审阅与修订
@@ -84,7 +84,7 @@
 | [check_episode.py](../scripts/check_episode.py) | 单集与视觉制作包的统一校验入口，也支持可选战斗JSON。 |
 | [check_series.py](../scripts/check_series.py) | 故事台账与视觉连续性。 |
 | [check_storyboard.py](../scripts/check_storyboard.py) | 内部V1～V16检查，含2.0分段决策记录。 |
-| [fight_contract.py](../scripts/fight_contract.py) | 内部JSON1.1/1.2校验与六项同源导出。 |
+| [fight_contract.py](../scripts/fight_contract.py) | 内部JSON1.2校验与六项同源导出。 |
 | [verify_package.py](../scripts/verify_package.py) | 总检与输入SHA证据。 |
 
 五份测试文件覆盖视觉、连续性、战斗契约、CLI与包结构；运行方法见[维护说明](maintenance.md)。机器检查不代替[内容审阅](../references/review/revision-protocol.md)或实际媒体观察。

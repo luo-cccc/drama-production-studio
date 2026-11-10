@@ -1148,7 +1148,7 @@ def main():
     parser.add_argument("--visual-only", action="store_true", help="等价于 --scope visual；检查既定场景，不套单集字数/断章阈值")
     parser.add_argument("--source", help="本视觉包精确覆盖的原文文件；逐字核对白，不推断动作语义")
     parser.add_argument("--require-visual", action="store_true", help="新的一体化正式交付必须包含有效视觉包，旧剧本不强制")
-    parser.add_argument("--combat-json", help="可选战斗1.1/1.2结构化存档，与同一Skill的文字交付关联")
+    parser.add_argument("--combat-json", help="可选战斗1.2结构化存档，与同一Skill的文字交付关联")
     parser.add_argument("--export", help="与--combat-json配合导出同源六项文档，只写入不存在的新目录")
     args = parser.parse_args()
     if args.self_test:

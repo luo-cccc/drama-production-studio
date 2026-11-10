@@ -48,7 +48,7 @@ python -X utf8 -B scripts/check_episode.py --combat-json examples/fight/sword-du
 python -X utf8 -B scripts/check_episode.py --combat-json examples/fight/sword-duel.json --export 新交付目录
 ```
 
-存档支持JSON契约1.1/1.2，新建使用1.2。导出产生 `project.json` 与设计、资产、分镜、关键帧、视频提示词、审阅六份Markdown。目标必须尚不存在；已有文件或目录不会被覆盖。内部工具不替用户推导动作，也不要求日常自然语言制作先填JSON。字段和数值语义见[斗法数据契约](../references/fight/fight-data-contract.md)。
+存档只支持JSON契约1.2；1.1旧存档不再兼容，须升级后重交。导出产生 `project.json` 与设计、资产、分镜、关键帧、视频提示词、审阅六份Markdown。目标必须尚不存在；已有文件或目录不会被覆盖。内部工具不替用户推导动作，也不要求日常自然语言制作先填JSON。字段和数值语义见[斗法数据契约](../references/fight/fight-data-contract.md)。
 
 ## 评估结果的含义
 

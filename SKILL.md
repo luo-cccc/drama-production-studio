@@ -2,7 +2,7 @@
 name: drama-production-studio
 description: 将创意、小说或定稿中文剧本转为短剧大纲、分集剧本、资产图片提示词、导演分镜、关键帧与逐段视频提示词，支持仙侠斗法、连续性管理及返修。用于完整创制、现稿转制作、续作或专项审阅，按用户指定范围交付。
 metadata:
-  version: "7.0.0"
+  version: "8.0.0"
   updated: "2026-11-10"
 ---
 
